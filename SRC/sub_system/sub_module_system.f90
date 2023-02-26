@@ -109,7 +109,7 @@ MODULE mod_system
   logical :: openmp = .FALSE.
   logical :: openmpi= .FALSE.
   integer :: MatOp_omp,OpPsi_omp,BasisTOGrid_omp,Grid_omp,SG4_omp
-  integer :: MatOp_maxth,OpPsi_maxth,BasisTOGrid_maxth,Grid_maxth,SG4_maxt
+  integer :: MatOp_maxth,OpPsi_maxth,BasisTOGrid_maxth,Grid_maxth,SG4_maxth
 
   integer :: CRP_omp,CRP_maxth
 
@@ -129,6 +129,8 @@ MODULE mod_system
   logical :: NewBasisEl           = .FALSE.
   logical :: print_CoordType_done = .FALSE.! if T, the CoordType has been already print
 
+
+  character (len=Name_longlen) :: EneIO_format = "f20.5"
 
   TYPE param_FOR_optimization
     integer                        :: nb_OptParam    = 0

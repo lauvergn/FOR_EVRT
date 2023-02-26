@@ -193,7 +193,7 @@ $(info ************************************************************************)
 #==========================================
 VPATH = SRC/sub_system SRC/sub_nDindex SRC/sub_dnSVM SRC/sub_module SRC/sub_communf90/sub_math TESTS
 
-Primlib_SRCFILES  = sub_module_MPI.f90  sub_module_system.f90 sub_module_MPI_aux.f90
+Primlib_SRCFILES  = sub_module_MPI.f90  sub_module_system.f90 sub_module_MPI_aux.f90 sub_module_cart.f90
 
 math_SRCFILES = sub_integration.f90 sub_polyortho.f90 sub_function.f90 sub_fft.f90
 
@@ -317,7 +317,7 @@ $(OBJ_DIR)/sub_polyortho.o:           $(OBJ_DIR)/sub_module_system.o
 $(OBJ_DIR)/sub_function.o:            $(OBJ_DIR)/sub_module_system.o
 $(OBJ_DIR)/sub_fft.o:                 $(OBJ_DIR)/sub_module_system.o
 
-
+$(OBJ_DIR)/sub_module_IntVM.o:        $(OBJ_DIR)/sub_module_system.o
 $(OBJ_DIR)/sub_module_dnS.o:          $(OBJ_DIR)/sub_module_system.o
 $(OBJ_DIR)/sub_module_VecOFdnS.o:     $(OBJ_DIR)/sub_module_dnS.o $(OBJ_DIR)/sub_module_system.o
 $(OBJ_DIR)/sub_module_MatOFdnS.o:     $(OBJ_DIR)/sub_module_dnS.o $(OBJ_DIR)/sub_module_system.o
@@ -325,12 +325,11 @@ $(OBJ_DIR)/sub_module_dnV.o:          $(OBJ_DIR)/sub_module_dnS.o $(OBJ_DIR)/sub
 $(OBJ_DIR)/sub_module_dnM.o:          $(OBJ_DIR)/sub_module_dnV.o $(OBJ_DIR)/sub_module_dnS.o $(OBJ_DIR)/sub_module_system.o
 $(OBJ_DIR)/sub_module_dnSVM.o:        $(OBJ_DIR)/sub_module_dnS.o $(OBJ_DIR)/sub_module_VecOFdnS.o $(OBJ_DIR)/sub_module_MatOFdnS.o \
                                       $(OBJ_DIR)/sub_module_dnV.o $(OBJ_DIR)/sub_module_dnM.o \
-                                      $(OBJ_DIR)/sub_module_system.o
-
-$(OBJ_DIR)/sub_module_IntVM.o:        $(OBJ_DIR)/sub_module_system.o
+                                      $(OBJ_DIR)/sub_module_IntVM.o $(OBJ_DIR)/sub_module_system.o
 
 
 $(OBJ_DIR)/mod_FiniteDiff.o:          $(OBJ_DIR)/sub_module_dnSVM.o $(OBJ_DIR)/sub_module_system.o
+$(OBJ_DIR)/sub_module_cart.o:         $(OBJ_DIR)/sub_module_dnSVM.o $(OBJ_DIR)/sub_module_system.o
 
 
 $(OBJ_DIR)/sub_module_DInd.o:         $(OBJ_DIR)/sub_module_system.o
