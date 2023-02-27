@@ -129,6 +129,8 @@ MODULE mod_system
   logical :: NewBasisEl           = .FALSE.
   logical :: print_CoordType_done = .FALSE.! if T, the CoordType has been already print
 
+  character (len=:), allocatable :: Current_Path
+
 
   character (len=Name_longlen) :: EneIO_format = "f20.5"
 
@@ -430,6 +432,46 @@ CONTAINS
     IF (allocated(FPath_loc)) deallocate(FPath_loc)
 
   END FUNCTION make_EVRTInternalFileName
+  FUNCTION make_EVRTFileName(FileName,FPath) RESULT(make_FileName)
+    USE QDUtil_m, ONLY : err_FileName
+    IMPLICIT NONE
+
+    character (len=:), allocatable          :: make_FileName
+
+    character(len=*), intent(in)            :: FileName
+    character(len=*), intent(in), optional  :: FPath
+
+    character (len=:), allocatable          :: FPath_loc
+
+
+    integer :: ilast_char,err
+
+    IF (present(FPath)) THEN
+      FPath_loc = FPath
+    ELSE IF (allocated(Current_Path)) THEN
+      FPath_loc = Current_Path
+    ELSE
+      FPath_loc = ''
+    END IF
+
+    err = err_FileName(FileName,name_sub='make_EVRTFileName')
+    IF (err /= 0) STOP 'ERROR in make_EVRTFileName: problem with the FileName'
+
+    ilast_char = len_trim(FPath_loc)
+
+    IF (FileName(1:1) == "/" .OR. FileName(1:1) == "~" .OR. ilast_char == 0) THEN
+      make_FileName = trim(adjustl(FileName))
+    ELSE
+      IF (FPath_loc(ilast_char:ilast_char) == "/") THEN
+        make_FileName = trim(adjustl(FPath_loc)) // trim(adjustl(FileName))
+      ELSE
+        make_FileName = trim(adjustl(FPath_loc)) // '/' // trim(adjustl(FileName))
+      END IF
+    END IF
+
+    IF (allocated(FPath_loc)) deallocate(FPath_loc)
+
+  END FUNCTION make_EVRTFileName
   SUBROUTINE versionEVRT(write_version)
     IMPLICIT NONE
   
