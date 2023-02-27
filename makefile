@@ -274,6 +274,7 @@ zip: cleanall
 	cp -r * $(ExtLibSAVEDIR)/$(BaseName)_devloc
 	cd $(ExtLibSAVEDIR) ; zip -r Save_$(BaseName)_devloc.zip $(BaseName)_devloc
 	cd $(ExtLibSAVEDIR) ; rm -rf $(BaseName)_devloc
+	cd $(ExtLibSAVEDIR) ; ./cp_FOR_EVRT.sh
 	@echo "  done zip"
 #===============================================
 #=== external libraries ========================
