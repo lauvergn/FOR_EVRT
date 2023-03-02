@@ -419,7 +419,8 @@
       real(kind=Rkind) xtab(norder)
 
 !----- function -----------------------------------
-      real(kind=Rkind) :: gamma,gamma_perso
+      real(kind=Rkind) :: gamma
+      ! real(kind=Rkind) :: gamma_perso ! the function gamma_perso() is in QDUtil lib.
 !----- function -----------------------------------
 !
 
