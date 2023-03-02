@@ -13,10 +13,6 @@ LOC_version=$BaseName
 
 rm -rf $BaseName* #always remove the link
 
-if (test -d $LOC_version) then
-  echo $LOC_version directory exist
-  exit 0
-fi
 
 #latest release
 #latest HEAD version (dev version)
