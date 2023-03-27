@@ -75,7 +75,7 @@ MODULE mod_dnV
       PUBLIC :: dnVec2_O_dnVec1_TO_dnVec3
       PUBLIC :: sub_dnVec1_PROD_dnS2_TO_dnVec3
 
-      ! with new type: dnS_t (QML)
+      ! with new type: dnS_t (AD_dnSVM)
       PUBLIC :: sub_dnVec_TO_dnSt,sub_dnSt_TO_dnVec
 
       CONTAINS

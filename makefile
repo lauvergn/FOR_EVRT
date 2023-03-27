@@ -90,14 +90,10 @@ CPPSHELL_LAPACK  = -D__LAPACK="$(LLAPACK)"
 #===============================================================================
 #
 #===============================================================================
-# external lib (QML, AD_dnSVM ...)
+# external lib (QDUtil, AD_dnSVM ...)
 ifeq ($(ExtLibDIR),)
   ExtLibDIR := $(LOC_path)/Ext_Lib
 endif
-
-QML_DIR    = $(ExtLibDIR)/QuantumModelLib
-QMLMOD_DIR = $(QML_DIR)/OBJ/obj$(extlib_obj)
-QMLLIBA    = $(QML_DIR)/libQMLib$(extlib_obj).a
 
 AD_DIR    = $(ExtLibDIR)/AD_dnSVM
 ADMOD_DIR = $(AD_DIR)/OBJ/obj$(extlib_obj)
@@ -107,7 +103,8 @@ QD_DIR    = $(ExtLibDIR)/QDUtilLib
 QDMOD_DIR = $(QD_DIR)/OBJ/obj$(extlib_obj)
 QDLIBA    = $(QD_DIR)/libQD$(extlib_obj).a
 
-EXTLib     = $(QMLLIBA) $(ADLIBA) $(QDLIBA)
+EXTLib     = $(ADLIBA) $(QDLIBA)
+
 #===============================================================================
 #
 #===============================================================================
@@ -139,7 +136,7 @@ ifeq ($(F90),$(filter $(F90),gfortran gfortran-8))
   FFLAGS +=-J$(MOD_DIR)
 
   # where to look the .mod files
-  FFLAGS += -I$(QMLMOD_DIR) -I$(ADMOD_DIR) -I$(QDMOD_DIR)
+  FFLAGS +=  -I$(ADMOD_DIR) -I$(QDMOD_DIR)
 
   # some cpreprocessing
   FFLAGS += -cpp $(CPPSHELL)
@@ -269,28 +266,17 @@ BaseName := FOR_EVRT
 .PHONY: zip
 zip: cleanall
 	test -d $(ExtLibSAVEDIR) || (echo $(ExtLibDIR) "does not exist" ; exit 1)
-	cd $(ExtLibSAVEDIR) ; rm -rf $(BaseName)_devloc
-	mkdir $(ExtLibSAVEDIR)/$(BaseName)_devloc
-	cp -r * $(ExtLibSAVEDIR)/$(BaseName)_devloc
-	cd $(ExtLibSAVEDIR) ; zip -r Save_$(BaseName)_devloc.zip $(BaseName)_devloc
-	cd $(ExtLibSAVEDIR) ; rm -rf $(BaseName)_devloc
+	$(ExtLibSAVEDIR)/makezip.sh $(BaseName)
 	cd $(ExtLibSAVEDIR) ; ./cp_FOR_EVRT.sh
 	@echo "  done zip"
 #===============================================
 #=== external libraries ========================
-# AD_dnSVM + QML Lib
+# AD_dnSVM + QDUtil
 #===============================================
-#
-$(QMLLIBA):
-	@test -d $(ExtLibDIR) || (echo $(ExtLibDIR) "does not exist" ; exit 1)
-	@test -d $(QML_DIR) || (cd $(ExtLibDIR) ; ./get_QML.sh $(EXTLIB_TYPE))
-	@test -d $(QML_DIR) || (echo $(QML_DIR) "does not exist" ; exit 1)
-	cd $(QML_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) ExtLibDIR=$(ExtLibDIR)
-	@echo "  done " $(QDLIBA) " in "$(BaseName)
 #
 $(ADLIBA):
 	@test -d $(ExtLibDIR) || (echo $(ExtLibDIR) "does not exist" ; exit 1)
-	@test -d $(AD_DIR) || (cd $(ExtLibDIR) ; ./get_dnSVM.sh  $(EXTLIB_TYPE))
+	@test -d $(AD_DIR) || (cd $(ExtLibDIR) ; ./get_AD_dnSVM.sh  $(EXTLIB_TYPE))
 	@test -d $(AD_DIR) || (echo $(AD_DIR) "does not exist" ; exit 1)
 	cd $(AD_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) ExtLibDIR=$(ExtLibDIR)
 	@echo "  done " $(AD_DIR) " in "$(BaseName)
@@ -308,7 +294,7 @@ clean_extlib:
 #=======================================================================================
 #=======================================================================================
 #add dependence for parallelization
-$(OBJ): $(QMLLIBA) $(ADLIBA) $(QDLIBA)
+$(OBJ): $(ADLIBA) $(QDLIBA)
 
 $(OBJ_DIR)/sub_module_system.o:       $(OBJ_DIR)/sub_module_MPI.o
 $(OBJ_DIR)/sub_module_MPI_aux.o:      $(OBJ_DIR)/sub_module_MPI.o $(OBJ_DIR)/sub_module_system.o
@@ -362,11 +348,8 @@ ifeq ($(FFC),ifort)
     FFLAGS += -qopenmp
   endif
 
-  # some cpreprocessing
-  FFLAGS += -cpp $(CPPSHELL_QML)
-
   # where to look the .mod files
-  FFLAGS += -I$(QDMOD_DIR) -I$(ADMOD_DIR) -I$(QMLMOD_DIR)
+  FFLAGS += -I$(QDMOD_DIR) -I$(ADMOD_DIR)
 
   FLIB    = $(EXTLib)
   ifeq ($(LLAPACK),1)

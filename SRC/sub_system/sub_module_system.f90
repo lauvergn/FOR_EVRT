@@ -363,6 +363,46 @@ CONTAINS
           STOP 'error when calling time_record'
         ENDIF
   END SUBROUTINE
+
+  FUNCTION nom_i(nom1,i1)
+    IMPLICIT NONE
+  
+    character (len=14) :: nom_i
+    character (len=10) :: nom1
+    character (len=14) :: nom2
+    integer            :: j,i1
+  
+    write(out_unitp,*) nom1,i1
+    IF (i1 .GT. 100 ) STOP ' in nom_i: i1 too big'
+  
+    write(nom2,'(a10,i2)') nom1,i1
+    DO j=1,12  ! it has to be 12 and not 14
+      IF (nom2(j:j) .EQ. ' ') nom2(j:j)='_'
+    END DO
+    nom_i=nom2
+  
+  END FUNCTION nom_i
+  
+  FUNCTION nom_ii(nom1,i1,i2)
+    IMPLICIT NONE
+  
+    character (len=14) :: nom_ii
+  
+    character (len=10) :: nom1
+    character (len=14) :: nom2
+    integer            :: j,i1,i2
+  
+    !write(out_unitp,*) nom1,i1,i2
+    IF (i1 .GT. 100 .OR. i2 .GT. 100) STOP ' in nom_ii: i1 or i2 too big'
+  
+    write(nom2,'(a10,2i2)') nom1,i1,i2
+    DO j=1,14
+      IF (nom2(j:j) .EQ. ' ') nom2(j:j)='_'
+    END DO
+    nom_ii=nom2
+  
+  END FUNCTION nom_ii
+  
   SUBROUTINE read_name_advNo(nio,Read_name,err_io)
     character(len=*), intent(inout) :: Read_name
     integer,          intent(inout) :: err_io
