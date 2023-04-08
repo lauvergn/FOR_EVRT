@@ -42,6 +42,7 @@ PROGRAM test
 
   real (kind=Rkind),   parameter   :: ZeroTresh    = ONETENTH**10
 
+  CALL versionEVRT(write_version=.TRUE.)
     !====================================================================
     ! Tests for the identity matrix
     !

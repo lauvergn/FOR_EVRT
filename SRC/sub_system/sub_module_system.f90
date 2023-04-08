@@ -95,7 +95,8 @@ MODULE mod_system
   character (len=Line_len) :: compiler_opt = "unknown: -D__COMPILER_OPT=?"
 #endif
 #if defined(__COMPILER_LIBS)
-  character (len=Line_len) :: compiler_libs = __COMPILER_LIBS
+character (len=Line_len) :: compiler_libs = &
+       __COMPILER_LIBS
 #else
   character (len=Line_len) :: compiler_libs = "unknown: -D__COMPILER_LIBS=?"
 #endif

@@ -81,11 +81,12 @@ CPPSHELL = -D__COMPILE_DATE="\"$(shell date +"%a %e %b %Y - %H:%M:%S")\"" \
            -D__COMPILE_HOST="\"$(shell hostname -s)\"" \
            -D__COMPILER="'$(FFC)'" \
            -D__COMPILER_VER="'$(FC_VER)'" \
+           -D__COMPILER_OPT="'$(FFLAGS0)'" \
+           -D__COMPILER_LIBS="'$(FLIB0)'" \
            -D__EVRTPATH="'$(LOC_path)'" \
            -D__EVR_VER="'$(EVR_ver)'" \
            -D__TNUM_VER="'$(TNUM_ver)'" \
            -D__TANA_VER="'$(TANA_ver)'"
-CPPSHELL_LAPACK  = -D__LAPACK="$(LLAPACK)"
 
 #===============================================================================
 #
@@ -103,7 +104,8 @@ QD_DIR    = $(ExtLibDIR)/QDUtilLib
 QDMOD_DIR = $(QD_DIR)/OBJ/obj$(extlib_obj)
 QDLIBA    = $(QD_DIR)/libQD$(extlib_obj).a
 
-EXTLib     = $(ADLIBA) $(QDLIBA)
+EXTLib     = $(ADLIBA)  $(QDLIBA)
+FLIB0      = libAD_dnSVM$(extlib_obj).a libQD$(extlib_obj).a
 
 #===============================================================================
 #
@@ -111,7 +113,7 @@ EXTLib     = $(ADLIBA) $(QDLIBA)
 # gfortran (osx and linux)
 #ifeq ($(F90),gfortran)
 #===============================================================================
-ifeq ($(F90),$(filter $(F90),gfortran gfortran-8))
+ifeq ($(FFC),gfortran)
 
   # opt management
   ifeq ($(OOPT),1)
@@ -122,12 +124,14 @@ ifeq ($(F90),$(filter $(F90),gfortran gfortran-8))
 
   # integer kind management
   ifeq ($(INT),8)
-    FFLAGS += -fdefault-integer-8 -Dint8=1
+    FFLAGS   += -fdefault-integer-8
+    CPPSHELL += -Dint8=1
   endif
 
   # omp management
   ifeq ($(OOMP),1)
-    FFLAGS += -fopenmp
+    FFLAGS   += -fopenmp
+    CPPSHELL += -Drun_openMP=1
   endif
   FFLAGS0 := $(FFLAGS)
 
@@ -138,21 +142,22 @@ ifeq ($(F90),$(filter $(F90),gfortran gfortran-8))
   # where to look the .mod files
   FFLAGS +=  -I$(ADMOD_DIR) -I$(QDMOD_DIR)
 
-  # some cpreprocessing
+  # integer kind management
   FFLAGS += -cpp $(CPPSHELL)
-  ifeq ($(OMP),1)
-    FFLAGS += -Drun_openMP=1
-  endif
+
 
   FLIB   = $(EXTLib)
   # OS management
   ifeq ($(LLAPACK),1)
     ifeq ($(OS),Darwin)    # OSX
       # OSX libs (included lapack+blas)
-      FLIB += -framework Accelerate
+      FLIB  += -framework Accelerate
+      FLIB0 += -framework Accelerate
     else                   # Linux
       # linux libs
-      FLIB += -llapack -lblas
+      FLIB  += -llapack -lblas
+      FLIB0 += -llapack -lblas
+
       #
       # linux libs with mkl and with openmp
       #FLIB = -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_gnu_thread
@@ -165,7 +170,57 @@ ifeq ($(F90),$(filter $(F90),gfortran gfortran-8))
 
 endif
 #=================================================================================
+#=================================================================================
+#=================================================================================
+# ifort compillation v17 v18 with mkl
+#=================================================================================
+ifeq ($(FFC),ifort)
 
+  # opt management
+  ifeq ($(OOPT),1)
+      FFLAGS =  -O -parallel  -g -traceback
+  else
+      FFLAGS = -O0 -check all -g -traceback
+  endif
+
+  # integer kind management
+  ifeq ($(INT),8)
+    FFLAGS   += -fdefault-integer-8
+    CPPSHELL += -Dint8=1
+  endif
+
+  # omp management
+  ifeq ($(OOMP),1)
+    FFLAGS   += -qopenmp
+    CPPSHELL += -Drun_openMP=1
+  endif
+  FFLAGS0 := $(FFLAGS)
+
+  # where to store the modules
+  FFLAGS +=-module $(MOD_DIR)
+
+  # where to look the .mod files
+  FFLAGS += -I$(QDMOD_DIR) -I$(ADMOD_DIR)
+
+  # integer kind management
+  FFLAGS += -cpp $(CPPSHELL)
+
+
+  FLIB    = $(EXTLib)
+  ifeq ($(LLAPACK),1)
+    #FLIB += -mkl -lpthread
+    #FLIB += -qmkl -lpthread
+    FLIB +=  ${MKLROOT}/lib/libmkl_blas95_ilp64.a ${MKLROOT}/lib/libmkl_lapack95_ilp64.a ${MKLROOT}/lib/libmkl_intel_ilp64.a \
+             ${MKLROOT}/lib/libmkl_intel_thread.a ${MKLROOT}/lib/libmkl_core.a -liomp5 -lpthread -lm -ldl
+  else
+    FLIB += -lpthread
+  endif
+
+  FC_VER = $(shell $(FFC) --version | head -1 )
+
+endif
+#=================================================================================
+#=================================================================================
 #===============================================================================
 #===============================================================================
 $(info ************************************************************************)
@@ -179,7 +234,9 @@ endif
 $(info ***********OpenMP:           $(OOMP))
 $(info ***********Lapack:           $(LLAPACK))
 $(info ***********FFLAGS0:          $(FFLAGS0))
+$(info ***********FFLAGS:           $(FFLAGS))
 $(info ***********FLIB:             $(FLIB))
+$(info ***********FLIB0:            $(FLIB0))
 $(info ************************************************************************)
 $(info ************************************************************************)
 $(info ***************** TNUM_ver: $(TNUM_ver))
@@ -229,7 +286,7 @@ Test_FOR_EVRT.exe: $(OBJ_DIR)/Test_FOR_EVRT.o $(LIBA) $(EXTLib)
 #
 $(OBJ_DIR)/Test_FOR_EVRT.o: $(LIBA) $(EXTLib)
 #===============================================
-#============= Library: FOR_EVRT....a  ========
+#============= Library: FOR_EVRT....a  =========
 #===============================================
 .PHONY: lib
 lib: $(LIBA)
@@ -324,45 +381,3 @@ $(OBJ_DIR)/sub_module_nDindex.o:      $(OBJ_DIR)/sub_module_DInd.o $(OBJ_DIR)/su
 
 
 $(OBJ_DIR)/sub_module_nDfit.o:        $(OBJ_DIR)/sub_module_nDindex.o $(OBJ_DIR)/sub_module_system.o
-
-
-#=================================================================================
-#=================================================================================
-# ifort compillation v17 v18 with mkl
-#=================================================================================
-ifeq ($(FFC),ifort)
-
-  # opt management
-  ifeq ($(OOPT),1)
-      #F90FLAGS = -O -parallel -g -traceback
-      FFLAGS = -O  -g -traceback
-  else
-      FFLAGS = -O0 -check all -g -traceback
-  endif
-
-  # where to store the modules
-  FFLAGS +=-module $(MOD_DIR)
-
-  # omp management
-  ifeq ($(OOMP),1)
-    FFLAGS += -qopenmp
-  endif
-
-  # where to look the .mod files
-  FFLAGS += -I$(QDMOD_DIR) -I$(ADMOD_DIR)
-
-  FLIB    = $(EXTLib)
-  ifeq ($(LLAPACK),1)
-    #FLIB += -mkl -lpthread
-    #FLIB += -qmkl -lpthread
-    FLIB +=  ${MKLROOT}/lib/libmkl_blas95_ilp64.a ${MKLROOT}/lib/libmkl_lapack95_ilp64.a ${MKLROOT}/lib/libmkl_intel_ilp64.a \
-             ${MKLROOT}/lib/libmkl_intel_thread.a ${MKLROOT}/lib/libmkl_core.a -liomp5 -lpthread -lm -ldl
-  else
-    FLIB += -lpthread
-  endif
-
-  FC_VER = $(shell $(F90) --version | head -1 )
-
-endif
-#=================================================================================
-#=================================================================================
