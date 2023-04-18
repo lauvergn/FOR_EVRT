@@ -60,12 +60,13 @@ MODULE mod_dnS
 
       PUBLIC :: sub_dnS1_TO_dnS2, sub_dnS1_TO_dnS2_partial,sub_dnS1_TO_dnS2_partial_new
       PUBLIC :: sub_dnS1_PLUS_dnS2_TO_dnS2,sub_ABSdnS1_PLUS_dnS2_TO_dnS2
-      PUBLIC :: sub_dnS1_wPLUS_dnS2_TO_dnS3, sub_dnS1_wPLUS_dnS2_TO_dnS2
+      PUBLIC :: sub_dnS1_wPLUS_dnS2_TO_dnS3, sub_dnS1_wPLUS_dnS2_TO_dnS2, sub_dnS1_MINUS_dnS2_TO_dnS3
       PUBLIC :: sub_dnS1_PROD_w_TO_dnS2,sub_dnS1_PROD_dnS2_TO_dnS3
       PUBLIC :: sub_dnS1_TO_dntR2,sub_dntf,sub_dnf2_O_dnf3_TO_dnf1, sub_dntf_WITH_INV
       PUBLIC :: sub_ZERO_TO_dnS,sub_Weight_dnS,sub_WeightDer_dnS
       PUBLIC :: alloc_array, dealloc_array
       PUBLIC :: R_wADDTO_dnS2_ider
+      PUBLIC :: check_dnS_IsZERO
 
       CONTAINS
 
@@ -246,6 +247,8 @@ MODULE mod_dnS
 !
 !================================================================
 
+!!@description: TODO
+!!@param: TODO
       !!@description: TODO
       !!@param: TODO
       SUBROUTINE check_alloc_dnS(A,name_A,name_sub)
@@ -260,6 +263,27 @@ MODULE mod_dnS
           STOP
         END IF
       END SUBROUTINE check_alloc_dnS
+      !================================================================
+      !
+      !     check if dnS is zero
+      !
+      !================================================================
+      FUNCTION check_dnS_IsZERO(dnS)
+        logical :: check_dnS_IsZERO
+        TYPE (Type_dnS), intent(in) :: dnS
+
+        check_dnS_IsZERO = abs(dnS%d0) < ONETENTH**10
+        IF (associated(dnS%d1)) THEN
+          check_dnS_IsZERO = check_dnS_IsZERO .AND. all(abs(dnS%d1) < ONETENTH**10)
+        END IF
+        IF (associated(dnS%d2)) THEN
+          check_dnS_IsZERO = check_dnS_IsZERO .AND. all(abs(dnS%d2) < ONETENTH**10)
+        END IF
+        IF (associated(dnS%d3)) THEN
+          check_dnS_IsZERO = check_dnS_IsZERO .AND. all(abs(dnS%d3) < ONETENTH**10)
+        END IF
+
+      END FUNCTION check_dnS_IsZERO
 
   FUNCTION get_nderiv_FROM_dnS(dnS) RESULT(nderiv)
 
@@ -1171,14 +1195,19 @@ MODULE mod_dnS
 !       -91       =>    x*x
 !        99       =>    x^cte(1)
 !       -99       =>    x^-cte(1)
-
-
 !
 !  transfo theta ]0,Pi[ => x ]-inf,inf[
 !        71       =>    Pi/2+c1 * Atan(x) x E ]-inf,inf[
 !       -71       =>    tan((x-Pi/2)/c1) x E ]0,Pi[ Rq: invers of 71
 !        72       =>    (1+tanh(x)/2 x E ]-inf,inf[  + -72
 !        73       =>    tanh(x)/2 x E ]-inf,inf[     + -73
+!
+!  transfo theta ]0,Pi/2[ => x ]-inf,inf[
+!        171      =>    Pi/4 * Atan(x)/2 x E ]-inf,inf[
+!       -171      =>    tan(2*x-Pi/4)=-1/tan(x*x) x E ]0,Pi/2[ Rq: invers of 171
+!  transfo x ]-inf,inf[ => x ]-inf,inf[
+!        1171      =>    asinh(x) x E ]-inf,inf[
+!       -1171      =>    sinh(x) x E ]0,Pi/2[ Rq: invers of 1171
 !
 !  transfo phi [-Pi+phi0,phi0+Pi[ => x ]-inf,inf[
 !        81       =>    phi0 + 2*Atan(x) x E ]-inf,inf[   not yet
@@ -1203,7 +1232,7 @@ MODULE mod_dnS
       integer, intent(inout), optional :: dnErr
 
       real(kind=Rkind) ::  x2,x3,x4,a,b,d,R,xx,xx2
-      real(kind=Rkind) ::  c,s,t,cot,csc2,c2,s2,u,sec
+      real(kind=Rkind) ::  c,s,t,cot,csc2,c2,s2,u,sec,csc
       TYPE (Type_dnS)  :: dntf1,dntf2,dntf3
       real(kind=Rkind) :: cte_loc(20)
       integer          :: dnErr_INV
@@ -1358,7 +1387,40 @@ MODULE mod_dnS
          dntf%d1(1)     = sec*sec/cte(1)
          dntf%d2(1,1)   = TWO/cte(1) * t * dntf%d1(1)
          dntf%d3(1,1,1) = TWO/cte(1) * (dntf%d1(1)**2 + t*dntf%d2(1,1))
-       CASE (72)
+
+        CASE (171)
+          ! t(x) = Pi/4 + Atan(x)/2 x E ]-inf,inf[
+          a    = ONE/(ONE + x*x)
+          dntf%d0        = Pi/FOUR + HALF*atan(x)
+          dntf%d1(1)     = HALF * a
+          dntf%d2(1,1)   =  -a*a * x
+          dntf%d3(1,1,1) = (-ONE+THREE*x*x) * a**3
+        CASE (-171)
+          ! t(x) = tan(2*x-Pi/2)=-1/tan(2*x)  x E ]0,Pi/2[
+          u    = x+x
+          cot  = ONE/tan(u)
+          csc  = ONE/sin(u)
+ 
+          dntf%d0        = -cot
+          dntf%d1(1)     = TWO*csc*csc
+          dntf%d2(1,1)   = FOUR * dntf%d0 * dntf%d1(1)
+          dntf%d3(1,1,1) = FOUR*dntf%d1(1) * (FOUR *dntf%d0**2+dntf%d1(1))
+
+        CASE (1171)
+          ! t(x) = sinh(x)  x E ]-inf,inf[
+          dntf%d0        = sinh(x)
+          dntf%d1(1)     = cosh(x)
+          dntf%d2(1,1)   = dntf%d0
+          dntf%d3(1,1,1) = dntf%d1(1)
+        CASE (-1171)
+          ! t(x) = asinh(x) x E ]-inf,inf[
+          a    = ONE/sqrt(ONE + x*x)
+          dntf%d0        = asinh(x)
+          dntf%d1(1)     = a
+          dntf%d2(1,1)   =  -x*a**3
+          dntf%d3(1,1,1) = (-ONE+TWO*x*x) * a**5
+
+        CASE (72)
          ! t(x) =  (1+tanh(x))/2 x E ]-inf,inf[
          c = cosh(x)
          c2 = c*c

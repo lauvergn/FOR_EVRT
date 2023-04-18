@@ -28,6 +28,7 @@
 !===============================================================================
 PROGRAM test
   USE mod_system
+  USE mod_dnSVM
   IMPLICIT NONE
 
 
@@ -41,6 +42,10 @@ PROGRAM test
   complex(kind=Rkind), allocatable :: C3Mat(:,:),C3Vec(:)
 
   real (kind=Rkind),   parameter   :: ZeroTresh    = ONETENTH**10
+  integer               :: transfo_1D
+  TYPE(Type_dnS)        :: dnS1,dnS2,dnS3
+  real (kind=Rkind)     :: cte(20)
+
 
   CALL versionEVRT(write_version=.TRUE.)
     !====================================================================
@@ -93,5 +98,45 @@ PROGRAM test
   CALL inv_OF_Mat_TO_Mat_inv(R1Mat,R11Mat,0,ZERO)
   write(out_unitp,*) 'inversion RMat (sub), test: ',all(abs(R11Mat-R2Mat) < ZeroTresh)
   !CALL Write_Mat(R11Mat,out_unitp,5,info='R11Mat')
+
+  !====================================================================
+  ! test dnS 1D-transformation
+  dnS1%nb_var_deriv = 1
+  dnS1%nderiv       = 3
+  CALL alloc_dnS(dnS1)
+  CALL Set_ZERO_TO_dnSVM(dnS1)
+  CALL sub_dnS1_TO_dnS2(dnS1,dnS2)
+
+  dnS1%d0 = HALF
+  dnS1%d1 = ONE
+  dnS1%d2 = TWO
+  dnS1%d3 = ONE
+  !CALL Write_dnS(dnS1)
+
+  cte(:) = ZERO
+  cte(1:2) = [THREE,FIVE]
+  transfo_1D = 100
+  CALL sub_dnS1_TO_dntR2(dnS1,dnS2,transfo_1D= transfo_1D,nderiv=3,cte=cte)
+  CALL sub_dnS1_TO_dntR2(dnS2,dnS3,transfo_1D=-transfo_1D,nderiv=3,cte=cte)
+  !CALL Write_dnS(dnS3)
+
+  CALL sub_dnS1_MINUS_dnS2_TO_dnS3(dnS1,dnS3,dnS2)
+  write(out_unitp,*) 'transfo ',transfo_1D,', ok: ',check_dnS_IsZERO(dnS2)
+
+  transfo_1D = 171
+  CALL sub_dnS1_TO_dntR2(dnS1,dnS2,transfo_1D= transfo_1D,nderiv=3,cte=cte)
+  CALL sub_dnS1_TO_dntR2(dnS2,dnS3,transfo_1D=-transfo_1D,nderiv=3,cte=cte)
+  !CALL Write_dnS(dnS3)
+
+  CALL sub_dnS1_MINUS_dnS2_TO_dnS3(dnS1,dnS3,dnS2)
+  write(out_unitp,*) 'transfo ',transfo_1D,', ok: ',check_dnS_IsZERO(dnS2)
+
+  transfo_1D = 1171
+  CALL sub_dnS1_TO_dntR2(dnS1,dnS2,transfo_1D= transfo_1D,nderiv=3,cte=cte)
+  CALL sub_dnS1_TO_dntR2(dnS2,dnS3,transfo_1D=-transfo_1D,nderiv=3,cte=cte)
+  !CALL Write_dnS(dnS3)
+
+  CALL sub_dnS1_MINUS_dnS2_TO_dnS3(dnS1,dnS3,dnS2)
+  write(out_unitp,*) 'transfo ',transfo_1D,', ok: ',check_dnS_IsZERO(dnS2)
 
 END PROGRAM test
