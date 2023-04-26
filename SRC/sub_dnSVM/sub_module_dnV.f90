@@ -58,8 +58,15 @@ MODULE mod_dnV
         MODULE PROCEDURE dealloc_array_OF_dnVecdim1,dealloc_array_OF_dnVecdim2
       END INTERFACE
 
+      INTERFACE Write_dnVec
+        MODULE PROCEDURE Write_Type_dnVec
+      END INTERFACE
+      INTERFACE Write_dnSVM
+        MODULE PROCEDURE Write_Type_dnVec
+      END INTERFACE
       PUBLIC :: Type_dnVec, alloc_array, dealloc_array
-      PUBLIC :: alloc_dnVec, dealloc_dnVec, check_alloc_dnVec, Write_dnVec, sub_Normalize_dnVec
+      PUBLIC :: alloc_dnVec, dealloc_dnVec, check_alloc_dnVec
+      PUBLIC :: Write_dnSVM, Write_dnVec, sub_Normalize_dnVec
 
       PUBLIC :: get_nderiv_FROM_dnVec,get_nb_var_deriv_FROM_dnVec
 
@@ -77,6 +84,7 @@ MODULE mod_dnV
 
       ! with new type: dnS_t (AD_dnSVM)
       PUBLIC :: sub_dnVec_TO_dnSt,sub_dnSt_TO_dnVec
+      PUBLIC :: sub_dnVect_TO_dnVec, sub_dnVec_TO_dnVect
 
       CONTAINS
 !
@@ -390,7 +398,7 @@ MODULE mod_dnV
 !================================================================
       !!@description: write the derived type
       !!@param: TODO
-      SUBROUTINE Write_dnVec(dnVec,nderiv)
+      SUBROUTINE Write_Type_dnVec(dnVec,nderiv)
         TYPE (Type_dnVec) :: dnVec
         integer, optional :: nderiv
         integer :: i,j,k
@@ -401,7 +409,7 @@ MODULE mod_dnV
         nderiv_loc = dnVec%nderiv
         IF (present(nderiv)) nderiv_loc = min(nderiv_loc,nderiv)
 
-        write(out_unitp,*) 'BEGINNING Write dnVec'
+        write(out_unitp,*) 'BEGINNING Write_Type_dnVec'
         write(out_unitp,*) 'nderiv',dnVec%nderiv
         write(out_unitp,*) 'nb_var_vec,nb_var_deriv',                           &
                           dnVec%nb_var_vec,dnVec%nb_var_deriv
@@ -438,10 +446,10 @@ MODULE mod_dnV
           END DO
         END IF
 
-        write(out_unitp,*) 'END Write dnVec'
+        write(out_unitp,*) 'END Write_Type_dnVec'
 
 
-      END SUBROUTINE Write_dnVec
+      END SUBROUTINE Write_Type_dnVec
       SUBROUTINE Vec_wADDTO_dnVec2_ider(Vec,w,dnVec2,ider,nderiv)
         real (kind=Rkind),  intent(in)            :: Vec(:)
         TYPE (Type_dnVec),  intent(inout)         :: dnVec2
@@ -590,6 +598,82 @@ MODULE mod_dnV
        END SELECT
 
      END SUBROUTINE sub_dnSt_TO_dnVec
+
+      SUBROUTINE sub_dnVect_TO_dnVec(dnVect,dnVec)
+      USE ADdnSVM_m
+ 
+        TYPE (Type_dnVec) :: dnVec
+        TYPE (dnVec_t)    :: dnVect
+ 
+        integer           :: nderiv,nb_var_deriv,nb_var_vec
+        character (len=*), parameter :: name_sub='sub_dnVect_TO_dnVec'
+ 
+        nb_var_deriv = get_nVar(dnVect)
+        nderiv       = get_nderiv(dnVect)
+        nb_var_vec   = get_size(dnVect)
+ 
+        CALL check_alloc_dnVec(dnVec,'dnVec',name_sub)
+ 
+        nderiv = min(dnVec%nderiv,nderiv)
+ 
+        IF (nderiv > 0) THEN ! it has to be test because ndim of dnS is zero when nderiv=0
+        IF (dnVec%nb_var_deriv /= nb_var_deriv) THEN
+          write(out_unitp,*) ' ERROR in ',name_sub
+          write(out_unitp,*) ' nb_var_deriv in dnVec and dnVect are different!',   &
+                    dnVec%nb_var_deriv,nb_var_deriv
+          STOP
+        END IF
+        END IF
+        IF (dnVec%nb_var_vec /= nb_var_vec) THEN
+          write(out_unitp,*) ' ERROR in ',name_sub
+          write(out_unitp,*) ' nb_var_vec in dnVec and dnVect are different!',   &
+                    dnVec%nb_var_vec,nb_var_vec
+          STOP
+        END IF
+ 
+        SELECT CASE (nderiv)
+        CASE (0)
+          dnVec%d0 = get_d0(dnVect)
+        CASE (1)
+          dnVec%d0 = get_d0(dnVect)
+          dnVec%d1 = get_d1(dnVect)
+        CASE (2)
+          dnVec%d0 = get_d0(dnVect)
+          dnVec%d1 = get_d1(dnVect)
+          dnVec%d2 = get_d2(dnVect)
+        CASE (3)
+          dnVec%d0 = get_d0(dnVect)
+          dnVec%d1 = get_d1(dnVect)
+          dnVec%d2 = get_d2(dnVect)
+          dnVec%d3 = get_d3(dnVect)
+        END SELECT
+ 
+      END SUBROUTINE sub_dnVect_TO_dnVec
+      SUBROUTINE sub_dnVec_TO_dnVect(dnVec,dnVect)
+        USE ADdnSVM_m
+   
+          TYPE (Type_dnVec) :: dnVec
+          TYPE (dnVec_t)    :: dnVect
+   
+          integer           :: nderiv,nb_var_deriv,nb_var_vec
+          character (len=*), parameter :: name_sub='sub_dnVec_TO_dnVect'
+   
+          CALL check_alloc_dnVec(dnVec,'dnVec',name_sub)
+   
+          nderiv = dnVec%nderiv
+
+          SELECT CASE (nderiv)
+          CASE (0)
+            CALL set_dnVec(dnVect,dnVec%d0)
+          CASE (1)
+            CALL set_dnVec(dnVect,dnVec%d0,dnVec%d1)
+          CASE (2)
+            CALL set_dnVec(dnVect,dnVec%d0,dnVec%d1,dnVec%d2)
+          CASE (3)
+            CALL set_dnVec(dnVect,dnVec%d0,dnVec%d1,dnVec%d2,dnVec%d3)
+          END SELECT
+   
+        END SUBROUTINE sub_dnVec_TO_dnVect
       SUBROUTINE sub_dnVec_TO_dnS(dnVec,dnS,iVec,nderiv)
       use mod_dnS, only: type_dns, alloc_dns, check_alloc_dns, write_dns
 

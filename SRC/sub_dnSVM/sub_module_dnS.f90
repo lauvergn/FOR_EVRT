@@ -559,6 +559,65 @@ MODULE mod_dnS
 
       END SUBROUTINE sub_dnS1_TO_dnS2_partial_new
 
+      SUBROUTINE sub_dnS_TO_dnSt(dnS,dnSt)
+        USE ADdnSVM_m
+   
+          TYPE (Type_dnS)   :: dnS
+          TYPE (dnS_t)      :: dnSt
+   
+          character (len=*), parameter :: name_sub='sub_dnS_TO_dnSt'
+   
+          CALL check_alloc_dnS(dnS,'dnS',name_sub)
+   
+          SELECT CASE (dnS%nderiv)
+          CASE (0)
+            CALL set_dnS(dnSt,dnS%d0)
+          CASE (1)
+            CALL set_dnS(dnSt,dnS%d0,dnS%d1)
+          CASE (2)
+            CALL set_dnS(dnSt,dnS%d0,dnS%d1,dnS%d2)
+          CASE (3)
+            CALL set_dnS(dnSt,dnS%d0,dnS%d1,dnS%d2,dnS%d3)
+          END SELECT
+   
+        END SUBROUTINE sub_dnS_TO_dnSt
+        SUBROUTINE sub_dnSt_TO_dnS(dnSt,dnS)
+        USE ADdnSVM_m
+   
+          TYPE (Type_dnS)   :: dnS
+          TYPE (dnS_t)      :: dnSt
+   
+          integer           :: nderiv,nb_var_deriv
+          character (len=*), parameter :: name_sub='sub_dnSt_TO_dnS'
+   
+          nb_var_deriv = get_nVar(dnSt)
+          nderiv       = get_nderiv(dnSt)
+   
+          CALL check_alloc_dnS(dnS,'dnS',name_sub)
+   
+          nderiv = min(dnS%nderiv,nderiv)
+   
+          IF (nderiv > 0) THEN ! it has to be test because ndim of dnS is zero when nderiv=0
+          IF (dnS%nb_var_deriv /= nb_var_deriv) THEN
+            write(out_unitp,*) ' ERROR in ',name_sub
+            write(out_unitp,*) ' nb_var_deriv in dnS and dnSt are different!',   &
+                                dnS%nb_var_deriv,nb_var_deriv
+            STOP
+          END IF
+          END IF
+   
+          SELECT CASE (nderiv)
+          CASE (0)
+            CALL sub_get_dn(dnSt,dnS%d0)
+          CASE (1)
+            CALL sub_get_dn(dnSt,dnS%d0,dnS%d1)
+          CASE (2)
+            CALL sub_get_dn(dnSt,dnS%d0,dnS%d1,dnS%d2)
+          CASE (3)
+            CALL sub_get_dn(dnSt,dnS%d0,dnS%d1,dnS%d2,dnS%d3)
+          END SELECT
+   
+      END SUBROUTINE sub_dnSt_TO_dnS
       SUBROUTINE sub_dnS1_PLUS_dnS2_TO_dnS2(dnS1,dnS2,nderiv)
       !USE mod_system
       IMPLICIT NONE

@@ -38,7 +38,7 @@ MODULE mod_dnSVM
 
 
       INTERFACE Write_dnSVM
-        MODULE PROCEDURE Write_dnS,Write_dnVec,Write_dnMat,Write_IntVec,Write_dnCplxMat
+        MODULE PROCEDURE Write_dnS,Write_dnMat,Write_IntVec,Write_dnCplxMat
       END INTERFACE
       INTERFACE alloc_dnSVM
         MODULE PROCEDURE alloc_dnS,alloc_dnVec,alloc_dnMat,alloc_IntVec,alloc_dnCplxMat
