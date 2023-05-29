@@ -36,21 +36,5 @@ MODULE mod_dnSVM
 
       IMPLICIT NONE
 
-
-      INTERFACE Write_dnSVM
-        MODULE PROCEDURE Write_dnS,Write_dnMat,Write_IntVec,Write_dnCplxMat
-      END INTERFACE
-      INTERFACE alloc_dnSVM
-        MODULE PROCEDURE alloc_dnS,alloc_dnVec,alloc_dnMat,alloc_IntVec,alloc_dnCplxMat
-      END INTERFACE
-      INTERFACE dealloc_dnSVM
-        MODULE PROCEDURE dealloc_dnS,dealloc_dnVec,dealloc_dnMat,       &
-                         dealloc_IntVec,dealloc_dnCplxMat
-      END INTERFACE
-      INTERFACE Set_ZERO_TO_dnSVM
-        MODULE PROCEDURE sub_ZERO_TO_dnS,sub_ZERO_TO_dnVec,             &
-                         sub_ZERO_TO_dnMat,sub_ZERO_TO_IntVec,sub_ZERO_TO_dnCplxMat
-      END INTERFACE
-
 END MODULE mod_dnSVM
 

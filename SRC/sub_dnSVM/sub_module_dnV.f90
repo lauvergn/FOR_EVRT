@@ -59,14 +59,30 @@ MODULE mod_dnV
       END INTERFACE
 
       INTERFACE Write_dnVec
-        MODULE PROCEDURE Write_Type_dnVec
+        MODULE PROCEDURE EVRT_Write_dnVec
       END INTERFACE
       INTERFACE Write_dnSVM
-        MODULE PROCEDURE Write_Type_dnVec
+        MODULE PROCEDURE EVRT_Write_dnVec
       END INTERFACE
+      INTERFACE alloc_dnSVM
+        MODULE PROCEDURE EVRT_alloc_dnVec
+      END INTERFACE
+      INTERFACE dealloc_dnSVM
+        MODULE PROCEDURE EVRT_dealloc_dnVec
+      END INTERFACE
+      INTERFACE alloc_dnVec
+      MODULE PROCEDURE EVRT_alloc_dnVec
+      END INTERFACE
+    INTERFACE dealloc_dnVec
+      MODULE PROCEDURE EVRT_dealloc_dnVec
+    END INTERFACE
+      INTERFACE Set_ZERO_TO_dnSVM
+        MODULE PROCEDURE sub_ZERO_TO_dnVec
+      END INTERFACE
+
       PUBLIC :: Type_dnVec, alloc_array, dealloc_array
       PUBLIC :: alloc_dnVec, dealloc_dnVec, check_alloc_dnVec
-      PUBLIC :: Write_dnSVM, Write_dnVec, sub_Normalize_dnVec
+      PUBLIC :: Write_dnVec, sub_Normalize_dnVec
 
       PUBLIC :: get_nderiv_FROM_dnVec,get_nb_var_deriv_FROM_dnVec
 
@@ -86,6 +102,8 @@ MODULE mod_dnV
       PUBLIC :: sub_dnVec_TO_dnSt,sub_dnSt_TO_dnVec
       PUBLIC :: sub_dnVect_TO_dnVec, sub_dnVec_TO_dnVect
 
+      PUBLIC :: Write_dnSVM,alloc_dnSVM,dealloc_dnSVM,Set_ZERO_TO_dnSVM
+
       CONTAINS
 !
 !================================================================
@@ -96,7 +114,7 @@ MODULE mod_dnV
 
       !!@description: TODO
       !!@param: TODO
-      SUBROUTINE alloc_dnVec(dnVec,nb_var_vec,nb_var_deriv,nderiv)
+      SUBROUTINE EVRT_alloc_dnVec(dnVec,nb_var_vec,nb_var_deriv,nderiv)
         TYPE (Type_dnVec) :: dnVec
         integer, optional :: nb_var_vec,nb_var_deriv,nderiv
         integer :: nd,nv,err_mem
@@ -113,38 +131,38 @@ MODULE mod_dnV
         IF (dnVec%alloc) RETURN
         dnVec%alloc = .TRUE.
 
-!        write(out_unitp,*) 'BEGINNING alloc_dnVec'
+!        write(out_unitp,*) 'BEGINNING EVRT_alloc_dnVec'
 !        write(out_unitp,*) 'nderiv',dnVec%nderiv
 !        write(out_unitp,*) 'nb_var_deriv',dnVec%nb_var_deriv
 !        write(out_unitp,*) 'nb_var_vec',dnVec%nb_var_vec
 
 
         IF (nv > 0) THEN
-          CALL alloc_array(dnVec%d0,[nv],'dnVec%d0','alloc_dnVec')
+          CALL alloc_array(dnVec%d0,[nv],'dnVec%d0','EVRT_alloc_dnVec')
           dnVec%d0(:) = ZERO
 
           IF (dnVec%nderiv >= 1) THEN
-            CALL alloc_array(dnVec%d1,[nv,nd],'dnVec%d1','alloc_dnVec')
+            CALL alloc_array(dnVec%d1,[nv,nd],'dnVec%d1','EVRT_alloc_dnVec')
             dnVec%d1(:,:) = ZERO
           END IF
 
           IF (dnVec%nderiv >= 2) THEN
-            CALL alloc_array(dnVec%d2,[nv,nd,nd],'dnVec%d2','alloc_dnVec')
+            CALL alloc_array(dnVec%d2,[nv,nd,nd],'dnVec%d2','EVRT_alloc_dnVec')
             dnVec%d2(:,:,:) = ZERO
           END IF
 
           IF (dnVec%nderiv >= 3) THEN
-            CALL alloc_array(dnVec%d3,[nv,nd,nd,nd],'dnVec%d3','alloc_dnVec')
+            CALL alloc_array(dnVec%d3,[nv,nd,nd,nd],'dnVec%d3','EVRT_alloc_dnVec')
             dnVec%d3(:,:,:,:) = ZERO
           END IF
 
           IF (dnVec%nderiv > 3) THEN
-            write(out_unitp,*) ' ERROR in alloc_dnVec'
+            write(out_unitp,*) ' ERROR in EVRT_alloc_dnVec'
             write(out_unitp,*) ' nderiv MUST be < 4',dnVec%nderiv
             STOP
           END IF
         ELSE
-          write(out_unitp,*) ' ERROR in alloc_dnVec'
+          write(out_unitp,*) ' ERROR in EVRT_alloc_dnVec'
           write(out_unitp,*) ' nb_var_vec MUST be > 0',nv
           STOP
         END IF
@@ -155,11 +173,11 @@ MODULE mod_dnV
 !       write(out_unitp,*) 'associated(d3)',associated(dnVec%d3)
 !        write(out_unitp,*) 'END alloc_dnVec'
 
-      END SUBROUTINE alloc_dnVec
+      END SUBROUTINE EVRT_alloc_dnVec
 
       !!@description: TODO
       !!@param: TODO
-      SUBROUTINE dealloc_dnVec(dnVec)
+      SUBROUTINE EVRT_dealloc_dnVec(dnVec)
         TYPE (Type_dnVec) :: dnVec
 
         integer :: nd,nv,err_mem
@@ -167,25 +185,25 @@ MODULE mod_dnV
         nd = dnVec%nb_var_deriv
         nv = dnVec%nb_var_vec
 
-!        write(out_unitp,*) 'BEGINNING alloc_dnVec'
+!        write(out_unitp,*) 'BEGINNING EVRT_dealloc_dnVec'
 !        write(out_unitp,*) 'nderiv',dnVec%nderiv
 !        write(out_unitp,*) 'nb_var_deriv',dnVec%nb_var_deriv
 !        write(out_unitp,*) 'nb_var_vec',dnVec%nb_var_vec
 
         IF (associated(dnVec%d0)) THEN
-          CALL dealloc_array(dnVec%d0,'dnVec%d0','dealloc_dnVec')
+          CALL dealloc_array(dnVec%d0,'dnVec%d0','EVRT_dealloc_dnVec')
         END IF
 
         IF (associated(dnVec%d1)) THEN
-          CALL dealloc_array(dnVec%d1,'dnVec%d1','dealloc_dnVec')
+          CALL dealloc_array(dnVec%d1,'dnVec%d1','EVRT_dealloc_dnVec')
         END IF
 
         IF (associated(dnVec%d2)) THEN
-          CALL dealloc_array(dnVec%d2,'dnVec%d2','dealloc_dnVec')
+          CALL dealloc_array(dnVec%d2,'dnVec%d2','EVRT_dealloc_dnVec')
         END IF
 
         IF (associated(dnVec%d3)) THEN
-          CALL dealloc_array(dnVec%d3,'dnVec%d3','dealloc_dnVec')
+          CALL dealloc_array(dnVec%d3,'dnVec%d3','EVRT_dealloc_dnVec')
         END IF
 
 
@@ -195,9 +213,9 @@ MODULE mod_dnV
         dnVec%nderiv       = 0
         dnVec%nb_var_deriv = 0
         dnVec%nb_var_vec   = 0
-        !write(out_unitp,*) 'END dealloc_dnVec'
+        !write(out_unitp,*) 'END EVRT_dealloc_dnVec'
 
-      END SUBROUTINE dealloc_dnVec
+      END SUBROUTINE EVRT_dealloc_dnVec
 
       SUBROUTINE alloc_array_OF_dnVecdim1(tab,tab_ub,name_var,name_sub,tab_lb)
       IMPLICIT NONE
@@ -398,18 +416,18 @@ MODULE mod_dnV
 !================================================================
       !!@description: write the derived type
       !!@param: TODO
-      SUBROUTINE Write_Type_dnVec(dnVec,nderiv)
+      SUBROUTINE EVRT_Write_dnVec(dnVec,nderiv)
         TYPE (Type_dnVec) :: dnVec
         integer, optional :: nderiv
         integer :: i,j,k
         integer :: nderiv_loc
 
-        CALL check_alloc_dnVec(dnVec,'dnVec','Write_dnVec')
+        CALL check_alloc_dnVec(dnVec,'dnVec','EVRT_Write_dnVec')
 
         nderiv_loc = dnVec%nderiv
         IF (present(nderiv)) nderiv_loc = min(nderiv_loc,nderiv)
 
-        write(out_unitp,*) 'BEGINNING Write_Type_dnVec'
+        write(out_unitp,*) 'BEGINNING Write_dnVec'
         write(out_unitp,*) 'nderiv',dnVec%nderiv
         write(out_unitp,*) 'nb_var_vec,nb_var_deriv',                           &
                           dnVec%nb_var_vec,dnVec%nb_var_deriv
@@ -446,10 +464,10 @@ MODULE mod_dnV
           END DO
         END IF
 
-        write(out_unitp,*) 'END Write_Type_dnVec'
+        write(out_unitp,*) 'END Write_dnVec'
 
 
-      END SUBROUTINE Write_Type_dnVec
+      END SUBROUTINE EVRT_Write_dnVec
       SUBROUTINE Vec_wADDTO_dnVec2_ider(Vec,w,dnVec2,ider,nderiv)
         real (kind=Rkind),  intent(in)            :: Vec(:)
         TYPE (Type_dnVec),  intent(inout)         :: dnVec2

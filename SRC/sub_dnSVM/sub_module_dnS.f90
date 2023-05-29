@@ -53,6 +53,27 @@ MODULE mod_dnS
       INTERFACE dealloc_array
         MODULE PROCEDURE dealloc_array_OF_dnSdim3
       END INTERFACE
+    INTERFACE Write_dnS
+      MODULE PROCEDURE EVRT_Write_dnS
+    END INTERFACE
+    INTERFACE alloc_dnS
+      MODULE PROCEDURE EVRT_alloc_dnS
+    END INTERFACE
+    INTERFACE dealloc_dnS
+      MODULE PROCEDURE EVRT_dealloc_dnS
+    END INTERFACE
+    INTERFACE Write_dnSVM
+      MODULE PROCEDURE EVRT_Write_dnS
+    END INTERFACE
+    INTERFACE alloc_dnSVM
+      MODULE PROCEDURE EVRT_alloc_dnS
+    END INTERFACE
+    INTERFACE dealloc_dnSVM
+      MODULE PROCEDURE EVRT_dealloc_dnS
+    END INTERFACE
+    INTERFACE Set_ZERO_TO_dnSVM
+      MODULE PROCEDURE sub_ZERO_TO_dnS
+    END INTERFACE
 
       PUBLIC :: Type_dnS, alloc_dnS, dealloc_dnS, check_alloc_dnS, Write_dnS
 
@@ -67,6 +88,7 @@ MODULE mod_dnS
       PUBLIC :: alloc_array, dealloc_array
       PUBLIC :: R_wADDTO_dnS2_ider
       PUBLIC :: check_dnS_IsZERO
+      PUBLIC :: Write_dnSVM,alloc_dnSVM,dealloc_dnSVM,Set_ZERO_TO_dnSVM
 
       CONTAINS
 
@@ -151,14 +173,14 @@ MODULE mod_dnS
 !================================================================
       !!@description: TODO
       !!@param: TODO
-      SUBROUTINE alloc_dnS(dnS,nb_var_deriv,nderiv)
+      SUBROUTINE EVRT_alloc_dnS(dnS,nb_var_deriv,nderiv)
         TYPE (Type_dnS) :: dnS
         integer, optional :: nb_var_deriv,nderiv
         integer :: nd
         integer :: err_mem
 
 
-        !write(out_unitp,*) 'BEGINNING alloc_dnS'
+        !write(out_unitp,*) 'BEGINNING EVRT_alloc_dnS'
 
         IF (present(nderiv)) dnS%nderiv = nderiv
         IF (present(nb_var_deriv)) dnS%nb_var_deriv = nb_var_deriv
@@ -167,49 +189,46 @@ MODULE mod_dnS
 
         nd = dnS%nb_var_deriv
 
-        !write(out_unitp,*) 'dnS%nb_var_deriv,dnS%nderiv',dnS%nb_var_deriv,dnS%nderiv
-        !write(out_unitp,*) 'dnS%alloc',dnS%alloc
-
         IF (dnS%alloc) RETURN
         dnS%alloc = .TRUE.
 
         IF (nd > 0) THEN
           dnS%d0           = ZERO
           IF (dnS%nderiv >= 1) THEN
-            CALL alloc_array(dnS%d1,[nd],'dnS%d1','alloc_dnS')
+            CALL alloc_array(dnS%d1,[nd],'dnS%d1','EVRT_alloc_dnS')
             dnS%d1(:) = ZERO
           END IF
           IF (dnS%nderiv >= 2) THEN
-            CALL alloc_array(dnS%d2,[nd,nd],'dnS%d2','alloc_dnS')
+            CALL alloc_array(dnS%d2,[nd,nd],'dnS%d2','EVRT_alloc_dnS')
             dnS%d2(:,:) = ZERO
           END IF
           IF (dnS%nderiv >= 3) THEN
-            CALL alloc_array(dnS%d3,[nd,nd,nd],'dnS%d3','alloc_dnS')
+            CALL alloc_array(dnS%d3,[nd,nd,nd],'dnS%d3','EVRT_alloc_dnS')
             dnS%d3(:,:,:) = ZERO
           END IF
           IF (dnS%nderiv >= 4) THEN
-            write(out_unitp,*) ' ERROR in alloc_dnS'
+            write(out_unitp,*) ' ERROR in EVRT_alloc_dnS'
             write(out_unitp,*) ' nderiv MUST be < 4',dnS%nderiv
             STOP
           END IF
         ELSE
-          write(out_unitp,*) ' ERROR in alloc_dnS'
+          write(out_unitp,*) ' ERROR in EVRT_alloc_dnS'
           write(out_unitp,*) ' nb_var_deriv MUST be > 0',nd
           STOP
         END IF
 
         !CALL Write_dnS(dnS)
-        !write(out_unitp,*) 'END alloc_dnS'
+        !write(out_unitp,*) 'END EVRT_alloc_dnS'
 
-      END SUBROUTINE alloc_dnS
+      END SUBROUTINE EVRT_alloc_dnS
 
       !!@description: TODO
       !!@param: TODO
-      SUBROUTINE dealloc_dnS(dnS)
+      SUBROUTINE EVRT_dealloc_dnS(dnS)
         TYPE (Type_dnS) :: dnS
         integer :: err_mem,memory
 
-        !write(out_unitp,*) 'BEGINNING dealloc_dnS'
+        !write(out_unitp,*) 'BEGINNING EVRT_dealloc_dnS'
         !write(out_unitp,*) 'dnS%nb_var_deriv,dnS%nderiv',dnS%nb_var_deriv,dnS%nderiv
         !CALL Write_dnS(dnS)
         !flush(out_unitp)
@@ -217,15 +236,15 @@ MODULE mod_dnS
         dnS%d0           = ZERO
 
         IF (associated(dnS%d1)) THEN
-          CALL dealloc_array(dnS%d1,'dnS%d1','dealloc_dnS')
+          CALL dealloc_array(dnS%d1,'dnS%d1','EVRT_dealloc_dnS')
         END IF
 
         IF (associated(dnS%d2)) THEN
-          CALL dealloc_array(dnS%d2,'dnS%d2','dealloc_dnS')
+          CALL dealloc_array(dnS%d2,'dnS%d2','EVRT_dealloc_dnS')
         END IF
 
         IF (associated(dnS%d3)) THEN
-          CALL dealloc_array(dnS%d3,'dnS%d3','dealloc_dnS')
+          CALL dealloc_array(dnS%d3,'dnS%d3','EVRT_dealloc_dnS')
         END IF
 
         dnS%alloc    = .FALSE.
@@ -233,10 +252,10 @@ MODULE mod_dnS
         dnS%nderiv       = 0
         dnS%nb_var_deriv = 0
 
-        !write(out_unitp,*) 'END dealloc_dnS'
+        !write(out_unitp,*) 'END EVRT_dealloc_dnS'
         !flush(out_unitp)
 
-      END SUBROUTINE dealloc_dnS
+      END SUBROUTINE EVRT_dealloc_dnS
 
 
 
@@ -337,18 +356,18 @@ MODULE mod_dnS
 !================================================================
       !!@description: TODO
       !!@param: TODO
-      SUBROUTINE Write_dnS(dnS,nderiv)
+      SUBROUTINE EVRT_Write_dnS(dnS,nderiv)
         TYPE (Type_dnS) :: dnS
         integer, optional :: nderiv
         integer :: i,j,k,nderiv_loc
 
 
-        CALL check_alloc_dnS(dnS,'dnS','Write_dnS')
+        CALL check_alloc_dnS(dnS,'dnS','EVRT_Write_dnS')
 
         nderiv_loc = dnS%nderiv
         IF (present(nderiv)) nderiv_loc = min(nderiv_loc,nderiv)
 
-        write(out_unitp,*) 'BEGINNING Write dnS'
+        write(out_unitp,*) 'BEGINNING Write_dnS'
         write(out_unitp,*) 'nderiv,nb_var_deriv',dnS%nderiv,dnS%nb_var_deriv
         write(out_unitp,*) 'd0'
         write(out_unitp,*) dnS%d0
@@ -377,8 +396,8 @@ MODULE mod_dnS
           END DO
         END IF
 
-        write(out_unitp,*) 'END Write dnS'
-      END SUBROUTINE Write_dnS
+        write(out_unitp,*) 'END Write_dnS'
+      END SUBROUTINE EVRT_Write_dnS
       !!@description: TODO
       !!@param: TODO
       SUBROUTINE sub_dnS1_TO_dnS2(dnS1,dnS2,nderiv)

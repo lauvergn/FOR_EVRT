@@ -63,11 +63,25 @@ MODULE mod_IntVM
         MODULE PROCEDURE dealloc_array_OF_IntMatdim1
       END INTERFACE
 
+      INTERFACE Write_dnSVM
+        MODULE PROCEDURE Write_IntVec
+      END INTERFACE
+      INTERFACE alloc_dnSVM
+        MODULE PROCEDURE alloc_IntVec
+      END INTERFACE
+      INTERFACE dealloc_dnSVM
+        MODULE PROCEDURE dealloc_IntVec
+      END INTERFACE
+      INTERFACE Set_ZERO_TO_dnSVM
+        MODULE PROCEDURE sub_ZERO_TO_IntVec
+      END INTERFACE
+
       PUBLIC :: Type_IntVec, alloc_IntVec, dealloc_IntVec, check_alloc_IntVec, &
                 Write_IntVec, sub_IntVec1_TO_IntVec2, sub_ZERO_TO_IntVec
       PUBLIC :: Type_IntMat, alloc_IntMat, dealloc_IntMat, check_alloc_IntMat, &
                 Write_IntMat, sub_IntMat1_TO_IntMat2
       PUBLIC :: alloc_array, dealloc_array
+      PUBLIC :: Write_dnSVM,alloc_dnSVM,dealloc_dnSVM,Set_ZERO_TO_dnSVM
 
       CONTAINS
 !

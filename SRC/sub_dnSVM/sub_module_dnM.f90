@@ -79,6 +79,29 @@
         MODULE PROCEDURE dealloc_array_OF_dnCplxMatdim1
       END INTERFACE
 
+    INTERFACE Write_dnMat
+      MODULE PROCEDURE EVRT_Write_dnMat,Write_dnCplxMat
+    END INTERFACE
+    INTERFACE alloc_dnMat
+      MODULE PROCEDURE EVRT_alloc_dnMat,alloc_dnCplxMat
+    END INTERFACE
+    INTERFACE dealloc_dnMat
+      MODULE PROCEDURE EVRT_dealloc_dnMat,dealloc_dnCplxMat
+    END INTERFACE
+
+      INTERFACE Write_dnSVM
+        MODULE PROCEDURE EVRT_Write_dnMat,Write_dnCplxMat
+      END INTERFACE
+      INTERFACE alloc_dnSVM
+        MODULE PROCEDURE EVRT_alloc_dnMat,alloc_dnCplxMat
+      END INTERFACE
+      INTERFACE dealloc_dnSVM
+        MODULE PROCEDURE EVRT_dealloc_dnMat,dealloc_dnCplxMat
+      END INTERFACE
+      INTERFACE Set_ZERO_TO_dnSVM
+        MODULE PROCEDURE sub_ZERO_TO_dnMat,sub_ZERO_TO_dnCplxMat
+      END INTERFACE
+
       PUBLIC :: Type_dnMat,     alloc_dnMat,     dealloc_dnMat,     check_alloc_dnMat,     Write_dnMat
       PUBLIC :: Type_dnCplxMat, alloc_dnCplxMat, dealloc_dnCplxMat, check_alloc_dnCplxMat, Write_dnCplxMat
 
@@ -92,6 +115,7 @@
       PUBLIC :: dnVec1_wPLUS_dnMat2_TO_dnMat3,dnMat1_PLUS_dnMat2_TO_dnMat3
       PUBLIC :: dnMat1_MUL_dnMat2_TO_dnMat3, dnVec1_MUL_dnMat2_TO_dnVec3,dnMat1_MUL_dnVec2_TO_dnVec3
       PUBLIC :: TRANS_dnMat1_TO_dnMat2,INV_dnMat1_TO_dnMat2, Det_OF_dnMat_TO_dnS
+      PUBLIC :: Write_dnSVM,alloc_dnSVM,dealloc_dnSVM,Set_ZERO_TO_dnSVM
 
       CONTAINS
 !
@@ -102,8 +126,7 @@
 !================================================================
 
 
-      SUBROUTINE alloc_dnMat(dnMat,                                     &
-                           nb_var_Matl,nb_var_Matc,nb_var_deriv,nderiv)
+      SUBROUTINE EVRT_alloc_dnMat(dnMat,nb_var_Matl,nb_var_Matc,nb_var_deriv,nderiv)
         TYPE (Type_dnMat) :: dnMat
         integer, optional :: nb_var_Matl,nb_var_Matc,nb_var_deriv,nderiv
         integer :: nd,nml,nmc
@@ -125,42 +148,42 @@
 
 
         IF (nml > 0 .AND. nmc > 0) THEN
-          CALL alloc_array(dnMat%d0,[nml,nmc],'dnMat%d0','alloc_dnMat')
+          CALL alloc_array(dnMat%d0,[nml,nmc],'dnMat%d0','EVRT_alloc_dnMat')
           dnMat%d0(:,:) = ZERO
 
           IF (dnMat%nderiv >= 1) THEN
-            CALL alloc_array(dnMat%d1,[nml,nmc,nd],'dnMat%d1','alloc_dnMat')
+            CALL alloc_array(dnMat%d1,[nml,nmc,nd],'dnMat%d1','EVRT_alloc_dnMat')
             dnMat%d1(:,:,:) = ZERO
           END IF
 
           IF (dnMat%nderiv >= 2) THEN
-            CALL alloc_array(dnMat%d2,[nml,nmc,nd,nd],'dnMat%d2','alloc_dnMat')
+            CALL alloc_array(dnMat%d2,[nml,nmc,nd,nd],'dnMat%d2','EVRT_alloc_dnMat')
             dnMat%d2(:,:,:,:) = ZERO
           END IF
 
           IF (dnMat%nderiv >= 3) THEN
-            CALL alloc_array(dnMat%d3,[nml,nmc,nd,nd,nd],'dnMat%d3','alloc_dnMat')
+            CALL alloc_array(dnMat%d3,[nml,nmc,nd,nd,nd],'dnMat%d3','EVRT_alloc_dnMat')
             dnMat%d3(:,:,:,:,:) = ZERO
           END IF
 
           IF (dnMat%nderiv > 3) THEN
-            write(out_unitp,*) ' ERROR in alloc_dnMat'
+            write(out_unitp,*) ' ERROR in EVRT_alloc_dnMat'
             write(out_unitp,*) ' nderiv MUST be < 4',dnMat%nderiv
             STOP
           END IF
         ELSE
-          write(out_unitp,*) ' ERROR in alloc_dnMat'
+          write(out_unitp,*) ' ERROR in EVRT_alloc_dnMat'
           !write(out_unitp,*) ' nb_var_deriv MUST be > 0',nd
           write(out_unitp,*) ' AND nb_var_matl MUST be > 0',nml
           write(out_unitp,*) ' AND nb_var_matc MUST be > 0',nmc
           STOP
         END IF
 
-      END SUBROUTINE alloc_dnMat
+      END SUBROUTINE EVRT_alloc_dnMat
 
       !!@description: TODO
       !!@param: TODO
-      SUBROUTINE dealloc_dnMat(dnMat)
+      SUBROUTINE EVRT_dealloc_dnMat(dnMat)
         TYPE (Type_dnMat) :: dnMat
         integer :: nd,nml,nmc
         integer :: err_mem
@@ -171,19 +194,19 @@
 
 
         IF (associated(dnMat%d0)) THEN
-          CALL dealloc_array(dnMat%d0,'dnMat%d0','dealloc_dnMat')
+          CALL dealloc_array(dnMat%d0,'dnMat%d0','EVRT_dealloc_dnMat')
         END IF
 
         IF (associated(dnMat%d1)) THEN
-          CALL dealloc_array(dnMat%d1,'dnMat%d1','dealloc_dnMat')
+          CALL dealloc_array(dnMat%d1,'dnMat%d1','EVRT_dealloc_dnMat')
         END IF
 
         IF (associated(dnMat%d2)) THEN
-          CALL dealloc_array(dnMat%d2,'dnMat%d2','dealloc_dnMat')
+          CALL dealloc_array(dnMat%d2,'dnMat%d2','EVRT_dealloc_dnMat')
         END IF
 
         IF (associated(dnMat%d3)) THEN
-          CALL dealloc_array(dnMat%d3,'dnMat%d3','dealloc_dnMat')
+          CALL dealloc_array(dnMat%d3,'dnMat%d3','EVRT_dealloc_dnMat')
         END IF
 
         dnMat%alloc    = .FALSE.
@@ -193,7 +216,7 @@
         dnMat%nb_var_Matl  = 0
         dnMat%nb_var_Matc  = 0
 
-      END SUBROUTINE dealloc_dnMat
+      END SUBROUTINE EVRT_dealloc_dnMat
 
       SUBROUTINE alloc_array_OF_dnMatdim1(tab,tab_ub,name_var,name_sub,tab_lb)
       IMPLICIT NONE
@@ -498,7 +521,7 @@
 
       !!@description: TODO
       !!@param: TODO
-      SUBROUTINE Write_dnMat(dnMat,nderiv)
+      SUBROUTINE EVRT_Write_dnMat(dnMat,nderiv)
         TYPE (Type_dnMat) :: dnMat
         integer, optional :: nderiv
         integer :: nderiv_loc
@@ -511,7 +534,7 @@
           write(out_unitp,*) 'END Write_dnMat'
           RETURN
         END IF
-        !CALL check_alloc_dnMat(dnMat,'dnMat','Write_dnMat')
+        !CALL check_alloc_dnMat(dnMat,'dnMat','EVRT_Write_dnMat')
 
         nderiv_loc = dnMat%nderiv
         IF (present(nderiv)) nderiv_loc = min(nderiv_loc,nderiv)
@@ -554,7 +577,7 @@
         write(out_unitp,*) 'END Write_dnMat'
 
 
-      END SUBROUTINE Write_dnMat
+      END SUBROUTINE EVRT_Write_dnMat
 
       SUBROUTINE Write_dnCplxMat(dnMat,nderiv)
         TYPE (Type_dnCplxMat) :: dnMat
