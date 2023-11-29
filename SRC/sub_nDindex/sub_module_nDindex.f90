@@ -122,7 +122,7 @@
 
       CONTAINS
 
-      SUBROUTINE init_nDindexPrim(nDindex,ndim,nDsize,nDinit,                   &
+      SUBROUTINE init_nDindexPrim(nDindex,ndim,nDsize,nDend,nDinit,             &
                                   nDweight,type_OF_nDindex,                     &
                                   MinNorm,MaxNorm,MaxCoupling,MinCoupling,      &
                                   Lmin,Lmax,L1max,L2max,nDNum_OF_Lmax,          &
@@ -131,7 +131,9 @@
 
         TYPE (Type_nDindex), intent(inout)           :: nDindex
         integer,             intent(in)              :: ndim
-        integer,             intent(in)              :: nDsize(:)
+
+        integer,             intent(in),    optional :: nDsize(:)
+        integer,             intent(in),    optional :: nDend(:)
 
         integer,             intent(inout), optional :: err_sub
         integer,             intent(in),    optional :: type_OF_nDindex,MaxCoupling,MinCoupling
@@ -231,7 +233,11 @@
         END IF
 
 
-        nDindex%nDsize(:) = nDsize(:)
+        IF (present(nDsize)) THEN
+          nDindex%nDsize(:) = nDsize(:)
+        ELSE
+          nDindex%nDsize(:) = -1
+        END IF
 
         IF (present(nDweight)) THEN
           nDindex%nDweight(:) = nDweight(:)
@@ -241,8 +247,29 @@
            nDindex%nDinit(:) = nDinit(:)
         END IF
 
-       nDindex%nDend(:) = -1
+        IF (present(nDend)) THEN
+          nDindex%nDend(:) = nDend(:)
+        ELSE
+          nDindex%nDend(:) = -1
+        END IF
 
+        IF (present(nDend) .AND. present(nDsize)) THEN
+          write(out_unitp,*) ' ERROR in ',name_sub
+          write(out_unitp,*) '  nDend(:) and nDsize(:) are both present.'
+          write(out_unitp,*) '   It is not possible'
+          write(out_unitp,*) ' Check the fortran source!!'
+          STOP 'ERROR in init_nDindexPrim : nDend(:) and nDsize(:) are both present'
+        ELSE IF (.NOT. present(nDend) .AND. present(nDsize)) THEN
+          nDindex%nDend(:) = nDindex%nDsize(:) + nDindex%nDinit(:) - 1
+        ELSE IF (present(nDend) .AND. .NOT. present(nDsize)) THEN
+          nDindex%nDsize(:) = nDindex%nDend(:) - nDindex%nDinit(:) + 1
+        ELSE
+          write(out_unitp,*) ' ERROR in ',name_sub
+          write(out_unitp,*) '  nDend(:) and nDsize(:) are both absent.'
+          write(out_unitp,*) '   It is not possible'
+          write(out_unitp,*) ' Check the fortran source!!'
+          STOP 'ERROR in init_nDindexPrim : nDend(:) and nDsize(:) are both absent'
+        END IF
 
        IF (present(type_OF_nDindex)) THEN
          nDindex%type_OF_nDindex = type_OF_nDindex
@@ -276,7 +303,6 @@
           write(out_unitp,*) ' Check the fortran source!!'
           STOP
         END IF
-        nDindex%nDend(:) = nDindex%nDsize(:) + nDindex%nDinit(:) - 1
 
         IF (nDindex%With_L) THEN
              nDindex%Lmax    = Lmax
