@@ -155,7 +155,8 @@ character (len=Line_len) :: compiler_libs = &
     logical :: nDfit            = .FALSE.
     logical :: nDGrid           = .FALSE.
     logical :: main_test        = .FALSE.
-  END TYPE param_EVRT_calc
+    logical :: Opt_CAP_Basis    = .FALSE.
+    END TYPE param_EVRT_calc
 
   TYPE (param_FOR_optimization), save :: para_FOR_optimization
   TYPE (param_EVRT_calc),        save :: para_EVRT_calc
