@@ -1291,9 +1291,9 @@ MODULE mod_dnS
 !        81       =>    phi0 + 2*Atan(x) x E ]-inf,inf[   not yet
 !        82       =>    phi0 + Pi(1+tanh(2/Pi*x) x E ]-inf,inf[   not yet
 !
-!  transfo R ]0,inf[ => x ]-inf,inf[
-!        111      =>    (-a^2 + x^2)/x x E ]0,inf[
-!       -111      =>    1/2(x+sqrt(4a+x^2)) x E ]-inf,inf[
+!  transfo R ]Rmin,inf[ => x ]-inf,inf[
+!        111      =>    (-a^2 + Dx^2)/Dx with Dx=x-Rmin  x E ]Rmin,inf[
+!       -111      =>    Rmin+1/2(x+sqrt(4a+x^2))         x E ]-inf,inf[
 !
 !       100 (affine) =>    cte(1) * x + cte(2)
 !      -100 (affine) =>  (x - cte(2)) / cte(1) Rq: invers of -100
@@ -1309,7 +1309,7 @@ MODULE mod_dnS
       real(kind=Rkind), intent(in)   :: cte(20)
       integer, intent(inout), optional :: dnErr
 
-      real(kind=Rkind) ::  x2,x3,x4,a,b,d,R,xx,xx2
+      real(kind=Rkind) ::  x2,x3,x4,a,b,d,R,xx,xx2,Rmin,Dx
       real(kind=Rkind) ::  c,s,t,cot,csc2,c2,s2,u,sec,csc
       TYPE (Type_dnS)  :: dntf1,dntf2,dntf3
       real(kind=Rkind) :: cte_loc(20)
@@ -1709,28 +1709,30 @@ MODULE mod_dnS
          dntf%d3(1,1,1) = ZERO
 
         CASE (111)
-         !  transfo R ]0,inf[ => x ]-inf,inf[
-         !-111      =>    (-a + x^2)/x = x-a/x    x E ]0,inf[
-         ! 111      =>    1/2(x+sqrt(4a+x^2))     x E ]-inf,inf[
+         !  transfo R ]Rmin,inf[ => x ]-inf,inf[
+         !-111      =>    (x-Rmin)-a/(x-Rmin)       x E ]0,inf[
+         ! 111      =>    Rmin+1/2(x+sqrt(4a+x^2))  x E ]-inf,inf[
          ! a = cte(1)^2
-         a = cte(1)**2
+         a    = cte(1)**2
+         Rmin = cte(2)
          R  = sqrt(FOUR*a + x**2)
-         dntf%d0        = (x + R)*HALF
+         dntf%d0        = Rmin + (x + R)*HALF
          dntf%d1(1)     = (1 + x/R)*HALF
          dntf%d2(1,1)   =  TWO*a/R**3
          dntf%d3(1,1,1) = -SIX*a*x/R**5
 
         CASE (-111)
-         !  transfo R ]0,inf[ => x ]-inf,inf[
-         !-111      =>    (-a + x^2)/x = x-a/x     x E ]0,inf[
-         ! 111      =>    1/2(x+sqrt(4a+x^2))      x E ]-inf,inf[
-         ! a = cte(1)^2
+         !  transfo R ]Rmin,inf[ => x ]-inf,inf[
+         !-111      =>    (x-Rmin)-a/(x-Rmin)       x E ]0,inf[
+         ! 111      =>    Rmin+1/2(x+sqrt(4a+x^2))  x E ]-inf,inf[
 
-         a = cte(1)**2
-         dntf%d0        = x -    a/x
-         dntf%d1(1)     = 1 +    a/x**2
-         dntf%d2(1,1)   =   -TWO*a/x**3
-         dntf%d3(1,1,1) =    SIX*a/x**4
+         a    = cte(1)**2
+         Rmin = cte(2)
+         Dx   = x-Rmin
+         dntf%d0        = Dx -   a/Dx
+         dntf%d1(1)     = 1 +    a/Dx**2
+         dntf%d2(1,1)   =   -TWO*a/Dx**3
+         dntf%d3(1,1,1) =    SIX*a/Dx**4
 
         CASE (200)
          ! t(x) = cte1 + x + ct2 x^2 + cte3 x^3
