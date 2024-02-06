@@ -139,6 +139,15 @@ PROGRAM test
   CALL sub_dnS1_MINUS_dnS2_TO_dnS3(dnS1,dnS3,dnS2)
   write(out_unitp,*) 'transfo ',transfo_1D,', ok: ',check_dnS_IsZERO(dnS2)
 
+
+  transfo_1D = 761
+  CALL sub_dnS1_TO_dntR2(dnS1,dnS2,transfo_1D= transfo_1D,nderiv=3,cte=cte)
+  CALL sub_dnS1_TO_dntR2(dnS2,dnS3,transfo_1D=-transfo_1D,nderiv=3,cte=cte)
+  !CALL Write_dnS(dnS3)
+
+  CALL sub_dnS1_MINUS_dnS2_TO_dnS3(dnS1,dnS3,dnS2)
+  write(out_unitp,*) 'transfo ',transfo_1D,', ok: ',check_dnS_IsZERO(dnS2)
+
   CALL Test_nDindex()
 END PROGRAM test
 SUBROUTINE Test_nDindex()

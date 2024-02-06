@@ -1311,6 +1311,8 @@ MODULE mod_dnS
 
       real(kind=Rkind) ::  x2,x3,x4,a,b,d,R,xx,xx2,Rmin,Dx
       real(kind=Rkind) ::  c,s,t,cot,csc2,c2,s2,u,sec,csc
+      real(kind=Rkind) ::  Av,sr,xs
+
       TYPE (Type_dnS)  :: dntf1,dntf2,dntf3
       real(kind=Rkind) :: cte_loc(20)
       integer          :: dnErr_INV
@@ -1604,7 +1606,7 @@ MODULE mod_dnS
          dntf%d2 = t * TWO*c
          dntf%d3 = TWO*a*t + EIGHT*c2 * t*dntf%d1(1)
 
-       CASE (76)
+       CASE (76) ! pb do not use
          ! t(x) =  A + (B-A)*(1/2+atan(x)/pi) x E ]-inf,inf[ and y E ]A,B[
          A = cte(1)
          B = cte(2)-A
@@ -1614,8 +1616,7 @@ MODULE mod_dnS
          dntf%d1 = B/pi * t
          dntf%d2 = -TWO*x*B/pi * t*t
          dntf%d3 = EIGHT*B/pi*x*x * t**3 - TWO*B/pi * t*t
-
-       CASE (-76)
+       CASE (-76)  ! pb do not use
          ! inverse t(x) =  A + (B-A)*(1/2+atan(x)/pi) x E ]-inf,inf[ and y E ]A,B[
          !A = cte(1)
          !B = cte(2)-cte(1)
@@ -1630,7 +1631,30 @@ MODULE mod_dnS
          dntf%d2 = TWO*a* (dntf%d0*dntf%d1(1))
          dntf%d3 = TWO*a* (dntf%d0*dntf%d2(1,1) + dntf%d1(1)*dntf%d1(1))
 
-       CASE (80)
+        CASE (761)
+          ! t(x) =  Av + sr  ArcTan[ x /sr] x E ]-inf,inf[ and y E ]A,B[
+          ! with Av=(A+B)/2 sr=(B-A)/pi and A=cte(1), B=cte(2)
+          Av = (cte(1)+cte(2))*HALF
+          sr = (cte(2)-cte(1))/PI
+ 
+          t = ONE/(sr*sr+x*x)
+          dntf%d0 = Av + sr * atan(x/sr)
+          dntf%d1 = t * sr**2
+          dntf%d2 = -TWO* x*sr**2 * t*t
+          dntf%d3 = -TWO* sr**2 * (sr**2 - THREE * x**2) * t**3
+        CASE (-761)
+          ! invers of : t(x) =  Av + sr  ArcTan[ x /sr] x E ]-inf,inf[ and y E ]A,B[
+          ! => t(x) = sr * tan((x-Av)/sr)
+          ! with Av=(A+B)/2 sr=(B-A)/pi and A=cte(1), B=cte(2)
+          Av = (cte(1)+cte(2))*HALF
+          sr = (cte(2)-cte(1))/PI
+          xs = (x-Av)/sr
+ 
+          dntf%d0 = sr * tan(xs)
+          dntf%d1 = ONE / cos(xs)**2
+          dntf%d2 = TWO/sr**2 * dntf%d1(1) * dntf%d0
+          dntf%d3 = TWO/sr**2 * dntf%d1(1)**2 * (TWO*sin(xs)**2 + ONE)
+        CASE (80)
          !80       =>    exp(cte(1)*x); xE ]-inf,inf[
          dntf%d0        = exp(cte(1)*x)
          dntf%d1(1)     = cte(1)*dntf%d0
