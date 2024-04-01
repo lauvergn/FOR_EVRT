@@ -29,6 +29,8 @@
 PROGRAM test
   USE mod_system
   USE mod_dnSVM
+  USE ADdnSVM_m
+
   IMPLICIT NONE
 
 
@@ -44,6 +46,7 @@ PROGRAM test
   real (kind=Rkind),   parameter   :: ZeroTresh    = ONETENTH**10
   integer               :: transfo_1D
   TYPE(Type_dnS)        :: dnS1,dnS2,dnS3
+  TYPE(dnS_t)           :: dnSt1
   real (kind=Rkind)     :: cte(20)
 
 
@@ -111,6 +114,10 @@ PROGRAM test
   dnS1%d1 = ONE
   dnS1%d2 = TWO
   dnS1%d3 = ONE
+  CALL sub_dnS_TO_dnSt(dnS1,dnSt1)
+  CALL sub_dnSt_TO_dnS(dnSt1,dnS2)
+  CALL sub_dnS1_MINUS_dnS2_TO_dnS3(dnS1,dnS2,dnS3)
+  write(out_unitp,*) 'Type_dnS <=> dnS_t, ok: ',check_dnS_IsZERO(dnS3)
   !CALL Write_dnS(dnS1)
 
   cte(:) = ZERO

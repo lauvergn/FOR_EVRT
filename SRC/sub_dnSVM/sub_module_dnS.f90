@@ -89,6 +89,7 @@ MODULE mod_dnS
       PUBLIC :: R_wADDTO_dnS2_ider
       PUBLIC :: check_dnS_IsZERO
       PUBLIC :: Write_dnSVM,alloc_dnSVM,dealloc_dnSVM,Set_ZERO_TO_dnSVM
+      PUBLIC :: sub_dnS_TO_dnSt,sub_dnSt_TO_dnS
 
       CONTAINS
 
