@@ -540,7 +540,7 @@ MODULE mod_dnV
       !!@description: TODO
       !!@param: TODO
      SUBROUTINE sub_dnVec_TO_dnSt(dnVec,dnS,iVec)
-     USE ADdnSVM_m
+     USE ADdnSVM_m, only : dnS_t, set_dnS
 
        TYPE (Type_dnVec) :: dnVec
        TYPE (dnS_t)      :: dnS
@@ -571,7 +571,7 @@ MODULE mod_dnV
 
      END SUBROUTINE sub_dnVec_TO_dnSt
      SUBROUTINE sub_dnSt_TO_dnVec(dnS,dnVec,iVec)
-     USE ADdnSVM_m
+     USE ADdnSVM_m, only : dnS_t, sub_get_dn,get_nVar,get_nderiv
 
        TYPE (Type_dnVec) :: dnVec
        TYPE (dnS_t)      :: dnS
@@ -618,8 +618,8 @@ MODULE mod_dnV
      END SUBROUTINE sub_dnSt_TO_dnVec
 
       SUBROUTINE sub_dnVect_TO_dnVec(dnVect,dnVec)
-      USE ADdnSVM_m
- 
+      USE ADdnSVM_m, only : dnVec_t, get_d0,get_d1,get_d2,get_d3, get_nVar,get_nderiv,get_size
+
         TYPE (Type_dnVec) :: dnVec
         TYPE (dnVec_t)    :: dnVect
  
@@ -668,8 +668,8 @@ MODULE mod_dnV
  
       END SUBROUTINE sub_dnVect_TO_dnVec
       SUBROUTINE sub_dnVec_TO_dnVect(dnVec,dnVect)
-        USE ADdnSVM_m
-   
+        USE ADdnSVM_m, only : dnVec_t, set_dnVec
+
           TYPE (Type_dnVec) :: dnVec
           TYPE (dnVec_t)    :: dnVect
    
