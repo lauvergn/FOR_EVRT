@@ -109,10 +109,13 @@ character (len=Line_len) :: compiler_libs = &
 
   logical :: openmp = .FALSE.
   logical :: openmpi= .FALSE.
-  integer :: MatOp_omp,OpPsi_omp,BasisTOGrid_omp,Grid_omp,SG4_omp
-  integer :: MatOp_maxth,OpPsi_maxth,BasisTOGrid_maxth,Grid_maxth,SG4_maxth
-
-  integer :: CRP_omp,CRP_maxth
+ 
+  integer :: MatOp_omp,MatOp_maxth,MatOp_maxth_init
+  integer :: OpPsi_omp,OpPsi_maxth,OpPsi_maxth_init
+  integer :: BasisTOGrid_omp,BasisTOGrid_maxth,BasisTOGrid_maxth_init
+  integer :: Grid_omp,Grid_maxth,Grid_maxth_init
+  integer :: SG4_omp,SG4_maxth,SG4_maxth_init
+  integer :: CRP_omp,CRP_maxth,CRP_maxth_ini
 
   logical :: Tune_SG4_omp  = .FALSE.
   logical :: Tune_Grid_omp = .FALSE.
