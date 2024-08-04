@@ -2,4 +2,4 @@ echo cleanlib
 rm -rf QDUtilLib*
 rm -rf AD_dnSVM*
 rm -rf EVRT_dnSVM*
-rm -r nDindex*
+rm -rf nDindex*
