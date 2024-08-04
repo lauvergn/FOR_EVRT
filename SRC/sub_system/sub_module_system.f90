@@ -37,11 +37,6 @@ MODULE mod_system
   END INTERFACE
   PRIVATE :: compare_la, compare_tab_int, compare_tab_real, compare_tab_cmplx
 
-  INTERFACE inferior_tab
-    MODULE PROCEDURE inferior_tab_real, inferior_tab_int
-  END INTERFACE
-  PRIVATE :: inferior_tab_real, inferior_tab_int
-
 #if defined(__TNUM_VER)
   character (len=Name_len) :: Tnum_version = __TNUM_VER
 #else
@@ -262,67 +257,6 @@ CONTAINS
        end do
 
       END FUNCTION compare_la
-
-      logical FUNCTION inferior_tab_real(x1,x2)
-      IMPLICIT NONE
-
-
-      logical :: inf_loc
-      integer       :: i
-      real (kind=Rkind), intent(in) :: x1(:),x2(:)
-
-
-       IF (size(x1) /= size(x2)) then
-         write(out_unitp,*) 'the size of the tab are different !!'
-         write(out_unitp,*) 'x1(:)',x1(:)
-         write(out_unitp,*) 'x2(:)',x2(:)
-         write(out_unitp,*) 'Check the fortran'
-         STOP
-       END IF
-
-      inf_loc = .FALSE.
-
-      DO i=1,size(x1)
-        inf_loc = (x1(i) < x2(i))
-        IF (x1(i) == x2(i)) CYCLE
-        EXIT
-      END DO
-
-!     write(out_unitp,*) 'x1,x2,inf_loc',x1,x2,inf_loc
-
-      inferior_tab_real = inf_loc
-
-      END FUNCTION inferior_tab_real
-      logical FUNCTION inferior_tab_int(x1,x2)
-      IMPLICIT NONE
-
-
-      logical :: inf_loc
-      integer       :: i
-      integer, intent(in) :: x1(:),x2(:)
-
-
-       IF (size(x1) /= size(x2)) then
-         write(out_unitp,*) 'the size of the tab are different !!'
-         write(out_unitp,*) 'x1(:)',x1(:)
-         write(out_unitp,*) 'x2(:)',x2(:)
-         write(out_unitp,*) 'Check the fortran'
-         STOP
-       END IF
-
-      inf_loc = .FALSE.
-
-      DO i=1,size(x1)
-        inf_loc = (x1(i) < x2(i))
-        IF (x1(i) == x2(i)) CYCLE
-        EXIT
-      END DO
-
-!     write(out_unitp,*) 'x1,x2,inf_loc',x1,x2,inf_loc
-
-      inferior_tab_int = inf_loc
-
-      END FUNCTION inferior_tab_int
 
       SUBROUTINE dihedral_range(angle,itype_dihedral)
 

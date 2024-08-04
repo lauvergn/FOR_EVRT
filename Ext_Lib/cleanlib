@@ -1,3 +1,5 @@
+echo cleanlib
 rm -rf QDUtilLib*
 rm -rf AD_dnSVM*
-rm -rf QuantumModelLib*
+rm -rf EVRT_dnSVM*
+rm -r nDindex*

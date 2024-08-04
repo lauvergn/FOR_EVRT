@@ -54,9 +54,9 @@ OS :=$(shell uname)
 
 # about EVRT, path, versions ...:
 LOC_path:= $(shell pwd)
-TNUM_ver:=$(shell awk '/Tnum/ {print $$3}' $(LOC_path)/version-EVR-T)
-TANA_ver:=$(shell awk '/Tana/ {print $$3}' $(LOC_path)/version-EVR-T)
-EVR_ver:=$(shell awk '/EVR/ {print $$3}' $(LOC_path)/version-EVR-T)
+#TNUM_ver:=$(shell awk '/Tnum/ {print $$3}' $(LOC_path)/version-EVR-T)
+#TANA_ver:=$(shell awk '/Tana/ {print $$3}' $(LOC_path)/version-EVR-T)
+#EVR_ver:=$(shell awk '/EVR/ {print $$3}' $(LOC_path)/version-EVR-T)
 
 # Extension for the object directory and the library
 ifeq ($(FFC),mpifort)
@@ -82,8 +82,8 @@ CPPSHELL = -D__COMPILE_DATE="\"$(shell date +"%a %e %b %Y - %H:%M:%S")\"" \
            -D__COMPILER="'$(FFC)'" \
            -D__COMPILER_VER="'$(FC_VER)'" \
            -D__COMPILER_OPT="'$(FFLAGS0)'" \
-           -D__COMPILER_LIBS="'$(FLIB0)'" \
-           -D__EVRTPATH="'$(LOC_path)'" \
+           -D__EVRTPATH="'$(LOC_path)'"
+#            \
            -D__EVR_VER="'$(EVR_ver)'" \
            -D__TNUM_VER="'$(TNUM_ver)'" \
            -D__TANA_VER="'$(TANA_ver)'"
@@ -96,6 +96,14 @@ ifeq ($(ExtLibDIR),)
   ExtLibDIR := $(LOC_path)/Ext_Lib
 endif
 
+nDindex_DIR    = $(ExtLibDIR)/nDindex
+nDindexMOD_DIR = $(nDindex_DIR)/OBJ/obj$(extlib_obj)
+nDindexLIBA    = $(nDindex_DIR)/libnDindex$(extlib_obj).a
+
+EVRTdnSVM_DIR    = $(ExtLibDIR)/EVRT_dnSVM
+EVRTdnSVMMOD_DIR = $(EVRTdnSVM_DIR)/obj/obj$(extlib_obj)
+EVRTdnSVMLIBA    = $(EVRTdnSVM_DIR)/libEVRT_dnSVM$(extlib_obj).a
+
 AD_DIR    = $(ExtLibDIR)/AD_dnSVM
 ADMOD_DIR = $(AD_DIR)/OBJ/obj$(extlib_obj)
 ADLIBA    = $(AD_DIR)/libAD_dnSVM$(extlib_obj).a
@@ -104,8 +112,8 @@ QD_DIR    = $(ExtLibDIR)/QDUtilLib
 QDMOD_DIR = $(QD_DIR)/OBJ/obj$(extlib_obj)
 QDLIBA    = $(QD_DIR)/libQD$(extlib_obj).a
 
-EXTLib     = $(ADLIBA)  $(QDLIBA)
-FLIB0      = libAD_dnSVM$(extlib_obj).a libQD$(extlib_obj).a
+EXTLib     = $(nDindexLIBA) $(EVRTdnSVMLIBA) $(ADLIBA)  $(QDLIBA)
+FLIB0      = libnDindex$(extlib_obj).a libEVRT_dnSVM$(extlib_obj).a libAD_dnSVM$(extlib_obj).a libQD$(extlib_obj).a
 
 #===============================================================================
 #
@@ -143,7 +151,7 @@ ifeq ($(FFC),gfortran)
   FFLAGS +=-J$(MOD_DIR)
 
   # where to look the .mod files
-  FFLAGS +=  -I$(ADMOD_DIR) -I$(QDMOD_DIR)
+  FFLAGS +=  -I$(ADMOD_DIR) -I$(QDMOD_DIR) -I$(EVRTdnSVMMOD_DIR) -I$(nDindexMOD_DIR)
 
   # integer kind management
   FFLAGS += -cpp $(CPPSHELL)
@@ -160,12 +168,6 @@ ifeq ($(FFC),gfortran)
       # linux libs
       FLIB  += -llapack -lblas
       FLIB0 += -llapack -lblas
-
-      #
-      # linux libs with mkl and with openmp
-      #FLIB = -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_gnu_thread
-      # linux libs with mkl and without openmp
-      #FLIB = -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_core -lmkl_sequential
     endif
   endif
 
@@ -177,11 +179,11 @@ endif
 #=================================================================================
 # ifort compillation v17 v18 with mkl
 #=================================================================================
-ifeq ($(FFC),ifort)
+ifeq ($(FFC),$(filter $(FFC),ifort ifx))
 
   # opt management
   ifeq ($(OOPT),1)
-      FFLAGS =  -O -parallel  -g -traceback -heap-arrays
+      FFLAGS =  -O  -g -traceback -heap-arrays
   else
       FFLAGS = -O0 -check all -g -traceback
   endif
@@ -194,8 +196,11 @@ ifeq ($(FFC),ifort)
 
   # omp management
   ifeq ($(OOMP),1)
-    FFLAGS   += -qopenmp
-    CPPSHELL += -Drun_openMP=1
+    ifeq ($(FFC),ifort)
+      FFLAGS += -qopenmp -parallel
+    else # ifx
+      FFLAGS += -qopenmp
+    endif
   endif
   FFLAGS0 := $(FFLAGS)
 
@@ -203,18 +208,19 @@ ifeq ($(FFC),ifort)
   FFLAGS +=-module $(MOD_DIR)
 
   # where to look the .mod files
-  FFLAGS += -I$(QDMOD_DIR) -I$(ADMOD_DIR)
+  FFLAGS += -I$(QDMOD_DIR) -I$(ADMOD_DIR) -I$(EVRTdnSVMMOD_DIR) -I$(nDindexMOD_DIR)
 
   # integer kind management
   FFLAGS += -cpp $(CPPSHELL)
 
 
   FLIB    = $(EXTLib)
-  ifeq ($(LLAPACK),1)
-    #FLIB += -mkl -lpthread
-    FLIB += -qmkl -lpthread
-    #FLIB +=  ${MKLROOT}/lib/libmkl_blas95_ilp64.a ${MKLROOT}/lib/libmkl_lapack95_ilp64.a ${MKLROOT}/lib/libmkl_intel_ilp64.a \
-    #         ${MKLROOT}/lib/libmkl_intel_thread.a ${MKLROOT}/lib/libmkl_core.a -liomp5 -lpthread -lm -ldl
+  ifneq ($(LLAPACK),0)
+    ifeq ($(FFC),ifort)
+      FLIB += -mkl -lpthread
+    else # ifx
+      FLIB += -qmkl -lpthread
+    endif
   else
     FLIB += -lpthread
   endif
@@ -259,7 +265,7 @@ ifeq ($(FFC),nagfor)
   FFLAGS += -fpp -D__LAPACK="$(LLAPACK)"
 
   # where to look .mod files
-  FFLAGS += -I$(QDMOD_DIR) -I$(ADMOD_DIR)
+  FFLAGS += -I$(QDMOD_DIR) -I$(ADMOD_DIR) -I$(EVRTdnSVMMOD_DIR) -I$(nDindexMOD_DIR)
 
   FLIB    = $(QDLIBA)
 
@@ -294,37 +300,22 @@ endif
 $(info ***********OpenMP:           $(OOMP))
 $(info ***********Lapack:           $(LLAPACK))
 $(info ***********FFLAGS0:          $(FFLAGS0))
-$(info ***********FFLAGS:           $(FFLAGS))
-$(info ***********FLIB:             $(FLIB))
+#$(info ***********FFLAGS:           $(FFLAGS))
+#$(info ***********FLIB:             $(FLIB))
 $(info ***********FLIB0:            $(FLIB0))
 $(info ************************************************************************)
 $(info ************************************************************************)
-$(info ***************** TNUM_ver: $(TNUM_ver))
-$(info ***************** TANA_ver: $(TANA_ver))
-$(info ****************** EVR_ver: $(EVR_ver))
-$(info ************************************************************************)
-$(info ************************************************************************)
 #==========================================
-VPATH = SRC/sub_system SRC/sub_nDindex SRC/sub_dnSVM SRC/sub_module SRC/sub_communf90/sub_math TESTS
+VPATH = SRC/sub_system SRC/sub_module SRC/sub_communf90/sub_math TESTS
 
 Primlib_SRCFILES  = sub_module_MPI.f90  sub_module_system.f90 sub_module_MPI_aux.f90 sub_module_cart.f90
 
 math_SRCFILES = sub_integration.f90 sub_polyortho.f90 sub_function.f90 sub_fft.f90
 
-dnSVM_SRCFILES = \
-  sub_module_dnS.f90 sub_module_VecOFdnS.f90 sub_module_MatOFdnS.f90 \
-  sub_module_dnV.f90 sub_module_dnM.f90 sub_module_IntVM.f90 \
-  sub_module_dnSVM.f90
-
-FiniteDiff_SRCFILES = mod_FiniteDiff.f90
-
-nDindex_SRCFILES  = sub_module_DInd.f90 sub_module_nDindex.f90
-
 nDfit_SRCFILES    = sub_module_nDfit.f90
 #============================================================================
 
-SRCFILES= $(Primlib_SRCFILES) $(math_SRCFILES) $(io_SRCFILES) $(dnSVM_SRCFILES) $(FiniteDiff_SRCFILES)  \
-          $(nDindex_SRCFILES) $(nDfit_SRCFILES)
+SRCFILES= $(Primlib_SRCFILES) $(math_SRCFILES) $(nDfit_SRCFILES)
 
 OBJ0=${SRCFILES:.f90=.o}
 OBJ=$(addprefix $(OBJ_DIR)/, $(OBJ0))
@@ -388,8 +379,22 @@ zip: cleanall
 	@echo "  done zip"
 #===============================================
 #=== external libraries ========================
-# AD_dnSVM + QDUtil
+# nDindex EVRT_dnSVM AD_dnSVM + QDUtil
 #===============================================
+#
+$(nDindexLIBA):
+	@test -d $(ExtLibDIR)   || (echo $(ExtLibDIR) "does not exist" ; exit 1)
+	@test -d $(nDindex_DIR) || (cd $(ExtLibDIR) ; ./get_nDindex.sh  $(EXTLIB_TYPE))
+	@test -d $(nDindex_DIR) || (echo $(nDindex_DIR) "does not exist" ; exit 1)
+	cd $(nDindex_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) INT=$(INT) ExtLibDIR=$(ExtLibDIR)
+	@echo "  done " $(nDindex_DIR) " in "$(BaseName)
+#
+$(EVRTdnSVMLIBA):
+	@test -d $(ExtLibDIR)     || (echo $(ExtLibDIR) "does not exist" ; exit 1)
+	@test -d $(EVRTdnSVM_DIR) || (cd $(ExtLibDIR) ; ./get_EVRT_dnSVM.sh  $(EXTLIB_TYPE))
+	@test -d $(EVRTdnSVM_DIR) || (echo $(EVRTdnSVM_DIR) "does not exist" ; exit 1)
+	cd $(EVRTdnSVM_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) INT=$(INT) ExtLibDIR=$(ExtLibDIR)
+	@echo "  done " $(EVRTdnSVM_DIR) " in "$(BaseName)
 #
 $(ADLIBA):
 	@test -d $(ExtLibDIR) || (echo $(ExtLibDIR) "does not exist" ; exit 1)
@@ -407,11 +412,12 @@ $(QDLIBA):
 ##
 .PHONY: clean_extlib
 clean_extlib:
+	echo cleanlib, DIR=$(ExtLibDIR)
 	cd $(ExtLibDIR) ; ./cleanlib
 #=======================================================================================
 #=======================================================================================
 #add dependence for parallelization
-$(OBJ): $(ADLIBA) $(QDLIBA)
+$(OBJ): $(QDLIBA) $(ADLIBA)  $(EVRTdnSVMLIBA) $(nDindexLIBA)
 
 $(OBJ_DIR)/sub_module_system.o:       $(OBJ_DIR)/sub_module_MPI.o
 $(OBJ_DIR)/sub_module_MPI_aux.o:      $(OBJ_DIR)/sub_module_MPI.o $(OBJ_DIR)/sub_module_system.o
@@ -421,23 +427,6 @@ $(OBJ_DIR)/sub_polyortho.o:           $(OBJ_DIR)/sub_module_system.o
 $(OBJ_DIR)/sub_function.o:            $(OBJ_DIR)/sub_module_system.o
 $(OBJ_DIR)/sub_fft.o:                 $(OBJ_DIR)/sub_module_system.o
 
-$(OBJ_DIR)/sub_module_IntVM.o:        $(OBJ_DIR)/sub_module_system.o
-$(OBJ_DIR)/sub_module_dnS.o:          $(OBJ_DIR)/sub_module_system.o
-$(OBJ_DIR)/sub_module_VecOFdnS.o:     $(OBJ_DIR)/sub_module_dnS.o $(OBJ_DIR)/sub_module_system.o
-$(OBJ_DIR)/sub_module_MatOFdnS.o:     $(OBJ_DIR)/sub_module_dnS.o $(OBJ_DIR)/sub_module_system.o
-$(OBJ_DIR)/sub_module_dnV.o:          $(OBJ_DIR)/sub_module_dnS.o $(OBJ_DIR)/sub_module_system.o
-$(OBJ_DIR)/sub_module_dnM.o:          $(OBJ_DIR)/sub_module_dnV.o $(OBJ_DIR)/sub_module_dnS.o $(OBJ_DIR)/sub_module_system.o
-$(OBJ_DIR)/sub_module_dnSVM.o:        $(OBJ_DIR)/sub_module_dnS.o $(OBJ_DIR)/sub_module_VecOFdnS.o $(OBJ_DIR)/sub_module_MatOFdnS.o \
-                                      $(OBJ_DIR)/sub_module_dnV.o $(OBJ_DIR)/sub_module_dnM.o \
-                                      $(OBJ_DIR)/sub_module_IntVM.o $(OBJ_DIR)/sub_module_system.o
+$(OBJ_DIR)/sub_module_cart.o:         $(OBJ_DIR)/sub_module_system.o
 
-
-$(OBJ_DIR)/mod_FiniteDiff.o:          $(OBJ_DIR)/sub_module_dnSVM.o $(OBJ_DIR)/sub_module_system.o
-$(OBJ_DIR)/sub_module_cart.o:         $(OBJ_DIR)/sub_module_dnSVM.o $(OBJ_DIR)/sub_module_system.o
-
-
-$(OBJ_DIR)/sub_module_DInd.o:         $(OBJ_DIR)/sub_module_system.o
-$(OBJ_DIR)/sub_module_nDindex.o:      $(OBJ_DIR)/sub_module_DInd.o $(OBJ_DIR)/sub_module_system.o
-
-
-$(OBJ_DIR)/sub_module_nDfit.o:        $(OBJ_DIR)/sub_module_nDindex.o $(OBJ_DIR)/sub_module_system.o
+$(OBJ_DIR)/sub_module_nDfit.o:        $(OBJ_DIR)/sub_module_system.o
