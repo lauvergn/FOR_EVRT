@@ -97,7 +97,7 @@ ifeq ($(ExtLibDIR),)
 endif
 
 nDindex_DIR    = $(ExtLibDIR)/nDindex
-nDindexMOD_DIR = $(nDindex_DIR)/OBJ/obj$(extlib_obj)
+nDindexMOD_DIR = $(nDindex_DIR)/obj/obj$(extlib_obj)
 nDindexLIBA    = $(nDindex_DIR)/libnDindex$(extlib_obj).a
 
 EVRTdnSVM_DIR    = $(ExtLibDIR)/EVRT_dnSVM
