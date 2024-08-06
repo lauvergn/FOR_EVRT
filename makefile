@@ -215,7 +215,7 @@ ifeq ($(FFC),$(filter $(FFC),ifort ifx))
 
 
   FLIB    = $(EXTLib)
-  ifneq ($(LLAPACK),0)
+  ifneq ($(LLAPACK),1)
     ifeq ($(FFC),ifort)
       FLIB += -mkl -lpthread
     else # ifx
