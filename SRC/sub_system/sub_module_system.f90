@@ -31,12 +31,6 @@ MODULE mod_system
   USE mod_MPI
   IMPLICIT NONE
 
-  INTERFACE compare_tab
-    MODULE PROCEDURE compare_la, compare_tab_int, compare_tab_real, &
-                     compare_tab_cmplx
-  END INTERFACE
-  PRIVATE :: compare_la, compare_tab_int, compare_tab_real, compare_tab_cmplx
-
 #if defined(__TNUM_VER)
   character (len=Name_len) :: Tnum_version = __TNUM_VER
 #else
@@ -161,125 +155,6 @@ character (len=Line_len) :: compiler_libs = &
 
 CONTAINS
 
-      !! @description: Compare two arrays of complex numbers
-      !!               L1 and L2 of equal size
-      !! @param: L1 First  array
-      !! @param: L2 Second array
-      logical FUNCTION compare_tab_cmplx(L1, L2)
-
-       complex(kind=Rkind), intent(in) :: L1(:), L2(:)
-
-       integer :: i
-
-       if (size(L1) /= size(L2)) then
-         compare_tab_cmplx = .false.
-         return
-       end if
-
-       compare_tab_cmplx = .true.
-       do i=1, size(L1)
-         if (abs(L1(i)-L2(i)) > ONETENTH**13) then
-           compare_tab_cmplx = .false.
-            return
-         end if
-       end do
-
-      END FUNCTION compare_tab_cmplx
-
-      !! @description: Compare two arrays of real L1 and L2 of equal size
-      !! @param: L1 First  array
-      !! @param: L2 Second array
-      logical FUNCTION compare_tab_real(L1, L2)
-
-       real(kind=Rkind), intent(in) :: L1(:), L2(:)
-
-       integer :: i
-
-       if (size(L1) /= size(L2)) then
-         compare_tab_real = .false.
-         return
-       end if
-
-       compare_tab_real = .true.
-       do i=1, size(L1)
-         if (abs(L1(i)-L2(i)) > ONETENTH**13) then
-           compare_tab_real = .false.
-            return
-         end if
-       end do
-
-      END FUNCTION compare_tab_real
-
-      !! @description: Compare two arrays of integer L1 and L2 of equal size
-      !! @param: L1 First  array
-      !! @param: L2 Second array
-      logical FUNCTION compare_tab_int(L1, L2)
-
-       integer, intent(in) :: L1(:), L2(:)
-
-       integer :: i
-
-       if (size(L1) /= size(L2)) then
-         compare_tab_int = .false.
-         return
-       end if
-
-       compare_tab_int = .true.
-       do i=1, size(L1)
-         if (abs(L1(i)-L2(i)) /= 0) then
-           compare_tab_int = .false.
-            return
-         end if
-       end do
-
-      END FUNCTION compare_tab_int
-
-      !! @description: Compare two logical arrays a and b of equal size
-      !! @param: L1 First logical array
-      !! @param: L2 Second logical array
-      logical FUNCTION compare_la(L1, L2)
-
-       logical, intent(in) :: L1(:), L2(:)
-
-       integer :: i
-
-       if (size(L1) /= size(L2)) then
-         compare_la = .false.
-         return
-       end if
-
-       compare_la = .true.
-       do i=1, size(L1)
-         if (L1(i) .neqv. L2(i)) then
-           compare_la = .false.
-            return
-         end if
-       end do
-
-      END FUNCTION compare_la
-
-      SUBROUTINE dihedral_range(angle,itype_dihedral)
-
-        real (kind=Rkind), intent(inout) :: angle
-        integer, optional :: itype_dihedral
-
-        integer :: itype_dihedral_loc
-
-        itype_dihedral_loc = 0
-        IF (present(itype_dihedral)) itype_dihedral_loc = itype_dihedral
-
-        SELECT CASE (itype_dihedral_loc)
-        CASE (1) ! [-pi:pi]
-          angle = modulo(angle,TWO*pi)
-          IF (angle > pi) angle = angle - TWO*pi
-        CASE (2) ! [0:2pi]
-          angle = modulo(angle,TWO*pi)
-        CASE Default
-          ! nothing
-        END SELECT
-
-      END SUBROUTINE dihedral_range
-
 !=======================================================================================
 !> @brief subroutine for recording time
 !> @param time_sum should be initialized before calling this function
@@ -341,37 +216,6 @@ CONTAINS
     nom_ii=nom2
   
   END FUNCTION nom_ii
-  
-  SUBROUTINE read_name_advNo(nio,Read_name,err_io)
-    character(len=*), intent(inout) :: Read_name
-    integer,          intent(inout) :: err_io
-    integer,          intent(in)    :: nio
-
-    character(len=1) :: chara
-    logical          :: first
-    integer :: ic
-
-    Read_name = ''
-    first     = .TRUE.
-    ic        = 0
-    DO
-      err_io    = 0
-      read(nio,'(a1)',IOSTAT=err_io,advance='no') chara
-
-      IF (err_io /= 0)   EXIT
-      !write(out_unitp,*) 'ic,chara',ic,'"',chara,'"'
-      IF (chara == ' ' .AND. .NOT. first) EXIT
-
-      IF (chara == ' ' .AND. first) CYCLE
-
-      ic = ic + 1
-      Read_name(ic:ic) = chara
-      first = .FALSE.
-
-    END DO
-    !write(out_unitp,*) 'Read_name: ',trim(Read_name)
-
-  END SUBROUTINE read_name_advNo
 
   FUNCTION make_EVRTInternalFileName(FileName,FPath) RESULT(make_FileName)
     USE QDUtil_m, ONLY : err_FileName
