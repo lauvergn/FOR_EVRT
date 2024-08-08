@@ -120,7 +120,6 @@ character (len=Line_len) :: compiler_libs = &
   integer :: SGtype               = -1
   integer :: FilePsiVersion       = 0
   logical :: NewBasisEl           = .FALSE.
-  logical :: print_CoordType_done = .FALSE.! if T, the CoordType has been already print
 
   character (len=:), allocatable :: Current_Path
 
