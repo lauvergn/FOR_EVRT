@@ -1,4 +1,11 @@
-.DS_Store */.DS_Store */*/.DS_Store
+.DS_Store
+*/.DS_Store
+*/*/.DS_Store
+
+*/*.mod
+*/*/*.mod
+*/*.MOD
+*/*/*.MOD
 obj/*
 *.exe
 *.a 

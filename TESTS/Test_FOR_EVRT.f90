@@ -27,7 +27,7 @@
 !===============================================================================
 !===============================================================================
 PROGRAM test
-  USE mod_system
+  USE FOR_EVRT_system_m
   USE mod_dnSVM
   USE ADdnSVM_m
 
@@ -50,7 +50,6 @@ PROGRAM test
   real (kind=Rkind)     :: cte(20)
 
 
-  CALL versionEVRT(write_version=.TRUE.)
     !====================================================================
     ! Tests for the identity matrix
     !
@@ -65,8 +64,8 @@ PROGRAM test
                    CZERO,CZERO,CONE],shape=[3,3])
   C2Mat = Identity_Mat(3)
 
-  write(out_unitp,*) 'identity RMat, test: ',all(abs(R1Mat-R2Mat) < ZeroTresh)
-  write(out_unitp,*) 'identity CMat, test: ',all(abs(C1Mat-C2Mat) < ZeroTresh)
+  write(out_unit,*) 'identity RMat, test: ',all(abs(R1Mat-R2Mat) < ZeroTresh)
+  write(out_unit,*) 'identity CMat, test: ',all(abs(C1Mat-C2Mat) < ZeroTresh)
 
   !====================================================================
   ! test for the determinant
@@ -77,8 +76,8 @@ PROGRAM test
 
   C1Mat = EYE * R1Mat
 
-  write(out_unitp,*) 'det RMat, test: ',(abs(Det_OF(R1Mat)-HALF) < ZeroTresh)
-  write(out_unitp,*) 'det CMat, test: ',(abs(Det_OF(C1Mat)-(-EYE*HALF)) < ZeroTresh)
+  write(out_unit,*) 'det RMat, test: ',(abs(Det_OF(R1Mat)-HALF) < ZeroTresh)
+  write(out_unit,*) 'det CMat, test: ',(abs(Det_OF(C1Mat)-(-EYE*HALF)) < ZeroTresh)
   !====================================================================
 
   !====================================================================
@@ -94,13 +93,13 @@ PROGRAM test
   C1Mat =  EYE * R1Mat
   C2Mat = -EYE * R2Mat
 
-  write(out_unitp,*) 'inversion RMat, test: ',all(abs(inv_OF_Mat_TO(R1Mat)-R2Mat) < ZeroTresh)
-  !CALL Write_Mat(inv_OF_Mat_TO(R1Mat),out_unitp,5,info='R1Mat^-1')
-  !CALL Write_Mat(R2Mat,out_unitp,5,info='R2Mat')
+  write(out_unit,*) 'inversion RMat, test: ',all(abs(inv_OF_Mat_TO(R1Mat)-R2Mat) < ZeroTresh)
+  !CALL Write_Mat(inv_OF_Mat_TO(R1Mat),out_unit,5,info='R1Mat^-1')
+  !CALL Write_Mat(R2Mat,out_unit,5,info='R2Mat')
 
   CALL inv_OF_Mat_TO_Mat_inv(R1Mat,R11Mat,0,ZERO)
-  write(out_unitp,*) 'inversion RMat (sub), test: ',all(abs(R11Mat-R2Mat) < ZeroTresh)
-  !CALL Write_Mat(R11Mat,out_unitp,5,info='R11Mat')
+  write(out_unit,*) 'inversion RMat (sub), test: ',all(abs(R11Mat-R2Mat) < ZeroTresh)
+  !CALL Write_Mat(R11Mat,out_unit,5,info='R11Mat')
 
   !====================================================================
   ! test dnS 1D-transformation
@@ -117,7 +116,7 @@ PROGRAM test
   CALL sub_dnS_TO_dnSt(dnS1,dnSt1)
   CALL sub_dnSt_TO_dnS(dnSt1,dnS2)
   CALL sub_dnS1_MINUS_dnS2_TO_dnS3(dnS1,dnS2,dnS3)
-  write(out_unitp,*) 'Type_dnS <=> dnS_t, ok: ',check_dnS_IsZERO(dnS3)
+  write(out_unit,*) 'Type_dnS <=> dnS_t, ok: ',check_dnS_IsZERO(dnS3)
   !CALL Write_dnS(dnS1)
 
   cte(:) = ZERO
@@ -128,7 +127,7 @@ PROGRAM test
   !CALL Write_dnS(dnS3)
 
   CALL sub_dnS1_MINUS_dnS2_TO_dnS3(dnS1,dnS3,dnS2)
-  write(out_unitp,*) 'transfo ',transfo_1D,', ok: ',check_dnS_IsZERO(dnS2)
+  write(out_unit,*) 'transfo ',transfo_1D,', ok: ',check_dnS_IsZERO(dnS2)
 
   transfo_1D = 171
   CALL sub_dnS1_TO_dntR2(dnS1,dnS2,transfo_1D= transfo_1D,nderiv=3,cte=cte)
@@ -136,7 +135,7 @@ PROGRAM test
   !CALL Write_dnS(dnS3)
 
   CALL sub_dnS1_MINUS_dnS2_TO_dnS3(dnS1,dnS3,dnS2)
-  write(out_unitp,*) 'transfo ',transfo_1D,', ok: ',check_dnS_IsZERO(dnS2)
+  write(out_unit,*) 'transfo ',transfo_1D,', ok: ',check_dnS_IsZERO(dnS2)
 
   transfo_1D = 1171
   CALL sub_dnS1_TO_dntR2(dnS1,dnS2,transfo_1D= transfo_1D,nderiv=3,cte=cte)
@@ -144,7 +143,7 @@ PROGRAM test
   !CALL Write_dnS(dnS3)
 
   CALL sub_dnS1_MINUS_dnS2_TO_dnS3(dnS1,dnS3,dnS2)
-  write(out_unitp,*) 'transfo ',transfo_1D,', ok: ',check_dnS_IsZERO(dnS2)
+  write(out_unit,*) 'transfo ',transfo_1D,', ok: ',check_dnS_IsZERO(dnS2)
 
 
   transfo_1D = 761
@@ -153,12 +152,12 @@ PROGRAM test
   !CALL Write_dnS(dnS3)
 
   CALL sub_dnS1_MINUS_dnS2_TO_dnS3(dnS1,dnS3,dnS2)
-  write(out_unitp,*) 'transfo ',transfo_1D,', ok: ',check_dnS_IsZERO(dnS2)
+  write(out_unit,*) 'transfo ',transfo_1D,', ok: ',check_dnS_IsZERO(dnS2)
 
   CALL Test_nDindex()
 END PROGRAM test
 SUBROUTINE Test_nDindex()
-  USE mod_system
+  USE FOR_EVRT_system_m
   USE mod_nDindex
   IMPLICIT NONE
 
@@ -188,7 +187,7 @@ SUBROUTINE Test_nDindex()
 
   END SUBROUTINE Test_nDindex
 RECURSIVE SUBROUTINE calc_Weight_OF_SRep(WeightSG,nDind_SmolyakRep)
-USE mod_system
+USE FOR_EVRT_system_m
 USE mod_nDindex
 IMPLICIT NONE
 
@@ -215,7 +214,7 @@ character (len=*), parameter :: name_sub='calc_Weight_OF_SRep'
 logical,parameter :: debug=.TRUE.
 !-----------------------------------------------------------
 IF (debug) THEN
-  write(out_unitp,*) 'BEGINNING ',name_sub
+  write(out_unit,*) 'BEGINNING ',name_sub
 END IF
 !-----------------------------------------------------------
  
@@ -226,7 +225,7 @@ binomial_proc = count(nDind_SmolyakRep%nDNum_OF_Lmax == 0) == nDind_SmolyakRep%n
 
 !binomial_proc = .FALSE.
 IF (binomial_proc) THEN
-    write(out_unitp,*) 'binomial procedure'
+    write(out_unit,*) 'binomial procedure'
 ! it works only when L1max or L2max are not used and
 !     when the max number of coupling terms is >= than ndim
 CALL init_nDval_OF_nDindex(nDind_SmolyakRep,tab_l)
@@ -245,10 +244,10 @@ DO i_SG=1,nDind_SmolyakRep%Max_nDI
     END IF
   END IF
 
-  IF (debug) write(out_unitp,*) 'i_SG,nDval,coef',i_SG,tab_l(:),WeightSG(i_SG)
+  IF (debug) write(out_unit,*) 'i_SG,nDval,coef',i_SG,tab_l(:),WeightSG(i_SG)
 END DO
 ELSE ! here the Smolyak rep in Delta_S is transformed in S to get the correct WeightSG
-  write(out_unitp,*) 'general procedure'
+  write(out_unit,*) 'general procedure'
 
 WeightSG(:) = ONE
 DO i=1,nDind_SmolyakRep%ndim
@@ -276,7 +275,7 @@ END DO
 !STOP 'not yet'
 END IF
 
-IF (debug) write(out_unitp,*) 'count zero weight: ',count(abs(WeightSG) <= ONETENTH**6)
+IF (debug) write(out_unit,*) 'count zero weight: ',count(abs(WeightSG) <= ONETENTH**6)
 !-----------------------------------------------------------
 IF (debug .OR. print_level > 1) THEN
 max_print = nDind_SmolyakRep%Max_nDI
@@ -285,15 +284,15 @@ IF (.NOT. debug) max_print = min(max_terms_print,max_print)
 CALL init_nDval_OF_nDindex(nDind_SmolyakRep,tab_l)
 DO i_SG=1,max_print
   CALL ADD_ONE_TO_nDindex(nDind_SmolyakRep,tab_l,iG=i_SG)
-  write(out_unitp,*) 'i_SG,nDval,coef',i_SG,tab_l(:),WeightSG(i_SG)
+  write(out_unit,*) 'i_SG,nDval,coef',i_SG,tab_l(:),WeightSG(i_SG)
 END DO
 IF (max_print < nDind_SmolyakRep%Max_nDI) THEN
-   write(out_unitp,*) 'i_SG,nDval,coef ....'
+   write(out_unit,*) 'i_SG,nDval,coef ....'
 END IF
 END IF
 
 IF (debug) THEN
-write(out_unitp,*) 'END ',name_sub
+write(out_unit,*) 'END ',name_sub
 END IF
 !-----------------------------------------------------------
 END SUBROUTINE calc_Weight_OF_SRep

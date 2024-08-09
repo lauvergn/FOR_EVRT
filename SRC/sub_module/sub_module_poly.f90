@@ -27,7 +27,7 @@
 !===============================================================================
 !===============================================================================
       MODULE mod_poly
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
       !!@description: TODO
@@ -74,9 +74,9 @@
         character (len=*), intent(in) :: name_sub
 
         IF (.NOT. A%alloc_poly) THEN
-          write(out_unitp,*) ' ERROR in ',name_sub
-          write(out_unitp,*) name_A,' has NOT been allocated with "alloc_poly"'
-          write(out_unitp,*) ' CHECK the source!!!!!'
+          write(out_unit,*) ' ERROR in ',name_sub
+          write(out_unit,*) name_A,' has NOT been allocated with "alloc_poly"'
+          write(out_unit,*) ' CHECK the source!!!!!'
           STOP
         END IF
         END SUBROUTINE check_alloc_poly
@@ -103,7 +103,7 @@
 !          logical,parameter :: debug = .TRUE.
 !          -------------------------------------------------
            IF (debug) THEN
-             write(out_unitp,*) ' BEGINNING ',name_sub
+             write(out_unit,*) ' BEGINNING ',name_sub
              CALL write_poly(poly)
            END IF
 
@@ -121,8 +121,8 @@
            END IF
 
            IF (npoly < 0) THEN
-             write(out_unitp,*) ' ERROR in alloc_poly'
-             write(out_unitp,*) ' the degree of the polynomial is <0',npoly
+             write(out_unit,*) ' ERROR in alloc_poly'
+             write(out_unit,*) ' the degree of the polynomial is <0',npoly
              STOP
            END IF
 
@@ -143,7 +143,7 @@
                ind_exp(0) = i
                CALL build_ind_poly(poly,ind_exp,1,poly%nb_coef,.TRUE.)
              END DO
-!            write(out_unitp,*) 'nb_coef',poly%nb_coef
+!            write(out_unit,*) 'nb_coef',poly%nb_coef
              allocate(poly%ind(poly%ndim,poly%nb_coef))
              ip = 0
              DO i=0,npoly
@@ -166,7 +166,7 @@
            poly%alloc_poly = .TRUE.
            IF (debug) THEN
              CALL write_poly(poly)
-             write(out_unitp,*) ' END ',name_sub
+             write(out_unit,*) ' END ',name_sub
            END IF
 
         END SUBROUTINE alloc_poly
@@ -184,7 +184,7 @@
 !          logical,parameter :: debug = .TRUE.
 !          -------------------------------------------------
            IF (debug) THEN
-             write(out_unitp,*) ' BEGINNING ',name_sub
+             write(out_unit,*) ' BEGINNING ',name_sub
              CALL write_poly(poly)
            END IF
 
@@ -201,7 +201,7 @@
 
            IF (debug) THEN
              CALL write_poly(poly)
-             write(out_unitp,*) ' END ',name_sub
+             write(out_unit,*) ' END ',name_sub
            END IF
 
         END SUBROUTINE dealloc_poly
@@ -235,32 +235,32 @@
 !          logical,parameter :: debug = .TRUE.
 !          -------------------------------------------------
            IF (debug) THEN
-             write(out_unitp,*) ' BEGINNING ',name_sub
-             write(out_unitp,*) ' iq,ip,check',iq,ip,check
-             write(out_unitp,*) ' ind_exp',ind_exp
+             write(out_unit,*) ' BEGINNING ',name_sub
+             write(out_unit,*) ' iq,ip,check',iq,ip,check
+             write(out_unit,*) ' ind_exp',ind_exp
            END IF
 
 
            IF (.NOT. check .AND. .NOT. associated(poly%ind)) THEN
-             write(out_unitp,*) ' ERROR in build_ind_poly'
-             write(out_unitp,*) ' poly%ind has NOT been allocated'
-             write(out_unitp,*) 'check,associated(poly%ind)',                   &
+             write(out_unit,*) ' ERROR in build_ind_poly'
+             write(out_unit,*) ' poly%ind has NOT been allocated'
+             write(out_unit,*) 'check,associated(poly%ind)',                   &
                          check,associated(poly%ind)
              STOP
            END IF
            IF (iq <0 .OR. iq > poly%ndim) THEN
-             write(out_unitp,*) ' ERROR in build_ind_poly'
-             write(out_unitp,*) ' iq MUST >= 0 or < ndim',iq,poly%ndim
-             write(out_unitp,*) ' Probably, iq MUST be iniatiated to 0'
+             write(out_unit,*) ' ERROR in build_ind_poly'
+             write(out_unit,*) ' iq MUST >= 0 or < ndim',iq,poly%ndim
+             write(out_unit,*) ' Probably, iq MUST be iniatiated to 0'
              STOP
            END IF
 
 
-!          write(out_unitp,*) 'build_ind_poly: ind_exp',iq,ind_exp
+!          write(out_unit,*) 'build_ind_poly: ind_exp',iq,ind_exp
            IF (iq == poly%ndim) THEN
              ip = ip + 1
              ind_exp(iq) = ind_exp(0) - SUM(ind_exp(1:iq-1))
-!            write(out_unitp,*) 'ip',ip,'ind_exp',ind_exp(1:poly%ndim)
+!            write(out_unit,*) 'ip',ip,'ind_exp',ind_exp(1:poly%ndim)
              IF (.NOT. check) poly%ind(:,ip) = ind_exp(1:poly%ndim)
            ELSE
              ind_exp(iq)=-1
@@ -271,7 +271,7 @@
            END IF
 
            IF (debug) THEN
-             write(out_unitp,*) ' END ',name_sub
+             write(out_unit,*) ' END ',name_sub
            END IF
 
        END SUBROUTINE build_ind_poly
@@ -295,8 +295,8 @@
 !          logical,parameter :: debug = .TRUE.
 !          -------------------------------------------------
            IF (debug) THEN
-             write(out_unitp,*) ' BEGINNING ',name_sub
-             write(out_unitp,*) ' ind',ind
+             write(out_unit,*) ' BEGINNING ',name_sub
+             write(out_unit,*) ' ind',ind
              CALL write_poly(poly)
            END IF
 
@@ -316,8 +316,8 @@
 
 
            IF (debug) THEN
-             write(out_unitp,*) 'ind,i',ind,i
-             write(out_unitp,*) ' END ',name_sub
+             write(out_unit,*) 'ind,i',ind,i
+             write(out_unit,*) ' END ',name_sub
            END IF
 
 
@@ -340,32 +340,32 @@
 !          logical,parameter :: debug = .TRUE.
 !          -------------------------------------------------
            IF (debug) THEN
-             write(out_unitp,*) ' BEGINNING ',name_sub
+             write(out_unit,*) ' BEGINNING ',name_sub
            END IF
 
            CALL check_alloc_poly(poly,'poly',name_sub)
 
-           write(out_unitp,*) '--------------------------------------'
-           write(out_unitp,*) 'ndim,npoly,nb_coef',                     &
+           write(out_unit,*) '--------------------------------------'
+           write(out_unit,*) 'ndim,npoly,nb_coef',                     &
                                        poly%ndim,poly%npoly,poly%nb_coef
-           write(out_unitp,*) 'alloc_poly',poly%alloc_poly
-           write(out_unitp,*) 'cplx',poly%cplx
-           write(out_unitp,*)
+           write(out_unit,*) 'alloc_poly',poly%alloc_poly
+           write(out_unit,*) 'cplx',poly%cplx
+           write(out_unit,*)
 
            IF (poly%cplx) THEN
              DO i=1,poly%nb_coef
-               write(out_unitp,*) 'i,ind,Ccoef',i,poly%ind(:,i),poly%Ccoef(i)
+               write(out_unit,*) 'i,ind,Ccoef',i,poly%ind(:,i),poly%Ccoef(i)
              END DO
            ELSE
              DO i=1,poly%nb_coef
-               write(out_unitp,*) 'i,ind,Rcoef',i,poly%ind(:,i),poly%Rcoef(i)
+               write(out_unit,*) 'i,ind,Rcoef',i,poly%ind(:,i),poly%Rcoef(i)
              END DO
            END IF
 
-           write(out_unitp,*) '--------------------------------------'
+           write(out_unit,*) '--------------------------------------'
 
            IF (debug) THEN
-             write(out_unitp,*) ' END ',name_sub
+             write(out_unit,*) ' END ',name_sub
            END IF
 
 
@@ -396,26 +396,26 @@
            IF (present(conjug)) cconjug = conjug
 
            IF (debug) THEN
-             write(out_unitp,*) ' BEGINNING ',name_sub
-             write(out_unitp,*) ' conjug',cconjug
+             write(out_unit,*) ' BEGINNING ',name_sub
+             write(out_unit,*) ' conjug',cconjug
              CALL write_poly(p1)
            END IF
 
 
            IF (p2%alloc_poly) THEN
              IF (p2%ndim /= p1%ndim) THEN
-               write(out_unitp,*) ' ERROR in p1TOp2'
-               write(out_unitp,*) ' p2 is allocated so'
-               write(out_unitp,*) ' ndim of p2 and p1 MUST be identical'
-               write(out_unitp,*) ' ndim of p1,p2:',p1%ndim,p2%ndim
+               write(out_unit,*) ' ERROR in p1TOp2'
+               write(out_unit,*) ' p2 is allocated so'
+               write(out_unit,*) ' ndim of p2 and p1 MUST be identical'
+               write(out_unit,*) ' ndim of p1,p2:',p1%ndim,p2%ndim
                STOP
              END IF
 
              IF (p2%npoly < p1%npoly) THEN
-               write(out_unitp,*) ' ERROR in p1TOp2'
-               write(out_unitp,*) ' p2 is allocated so'
-               write(out_unitp,*) ' p2%npoly MUST be >= p1%npoly'
-               write(out_unitp,*) ' npoly p1,p2:',p1%npoly,p2%npoly
+               write(out_unit,*) ' ERROR in p1TOp2'
+               write(out_unit,*) ' p2 is allocated so'
+               write(out_unit,*) ' p2%npoly MUST be >= p1%npoly'
+               write(out_unit,*) ' npoly p1,p2:',p1%npoly,p2%npoly
                STOP
              END IF
            ELSE
@@ -446,7 +446,7 @@
 
            IF (debug) THEN
              CALL write_poly(p1)
-             write(out_unitp,*) ' END ',name_sub
+             write(out_unit,*) ' END ',name_sub
            END IF
 
         END SUBROUTINE p1TOp2
@@ -478,34 +478,34 @@
 
 
            IF (debug) THEN
-             write(out_unitp,*) ' BEGINNING ',name_sub
+             write(out_unit,*) ' BEGINNING ',name_sub
              CALL write_poly(p1)
              CALL write_poly(p2)
            END IF
 
            IF (p1%ndim /= p2%ndim) THEN
-             write(out_unitp,*) ' ERROR in p1PLUSp2TOp3'
-             write(out_unitp,*) ' ndim of p1 and p2 MUST be identical'
-             write(out_unitp,*) ' ndim of p1 and p2:',p1%ndim,p2%ndim
+             write(out_unit,*) ' ERROR in p1PLUSp2TOp3'
+             write(out_unit,*) ' ndim of p1 and p2 MUST be identical'
+             write(out_unit,*) ' ndim of p1 and p2:',p1%ndim,p2%ndim
              STOP
            END IF
 
 
            IF (p3%alloc_poly) THEN
              IF (p3%ndim /= p1%ndim) THEN
-               write(out_unitp,*) ' ERROR in p1PLUSp2TOp3'
-               write(out_unitp,*) ' p3 is allocated so'
-               write(out_unitp,*) ' ndim of p3 and p1 (or p2) MUST be identical'
-               write(out_unitp,*) ' ndim of p1,p2 p3:',p1%ndim,p2%ndim,p3%ndim
+               write(out_unit,*) ' ERROR in p1PLUSp2TOp3'
+               write(out_unit,*) ' p3 is allocated so'
+               write(out_unit,*) ' ndim of p3 and p1 (or p2) MUST be identical'
+               write(out_unit,*) ' ndim of p1,p2 p3:',p1%ndim,p2%ndim,p3%ndim
                STOP
              END IF
 
              npoly3 = max(p1%npoly,p2%npoly)
              IF (p3%npoly < npoly3) THEN
-               write(out_unitp,*) ' ERROR in p1PLUSp2TOp3'
-               write(out_unitp,*) ' p3 is allocated so'
-               write(out_unitp,*) ' p3%npoly MUST be >= p1%npoly and p2%npoly'
-               write(out_unitp,*) ' npoly p1,p2 p3:',p1%npoly,p2%npoly,p3%npoly
+               write(out_unit,*) ' ERROR in p1PLUSp2TOp3'
+               write(out_unit,*) ' p3 is allocated so'
+               write(out_unit,*) ' p3%npoly MUST be >= p1%npoly and p2%npoly'
+               write(out_unit,*) ' npoly p1,p2 p3:',p1%npoly,p2%npoly,p3%npoly
                STOP
              END IF
            ELSE
@@ -548,7 +548,7 @@
 
            IF (debug) THEN
              CALL write_poly(p3)
-             write(out_unitp,*) ' END ',name_sub
+             write(out_unit,*) ' END ',name_sub
            END IF
 
         END SUBROUTINE p1PLUSp2TOp3
@@ -581,34 +581,34 @@
 
 
            IF (debug) THEN
-             write(out_unitp,*) ' BEGINNING ',name_sub
+             write(out_unit,*) ' BEGINNING ',name_sub
              CALL write_poly(p1)
              CALL write_poly(p2)
            END IF
 
            IF (p1%ndim /= p2%ndim) THEN
-             write(out_unitp,*) ' ERROR in p1TIMEp2TOp3'
-             write(out_unitp,*) ' ndim of p1 and p2 MUST be identical'
-             write(out_unitp,*) ' ndim of p1 and p2:',p1%ndim,p2%ndim
+             write(out_unit,*) ' ERROR in p1TIMEp2TOp3'
+             write(out_unit,*) ' ndim of p1 and p2 MUST be identical'
+             write(out_unit,*) ' ndim of p1 and p2:',p1%ndim,p2%ndim
              STOP
            END IF
 
 
            IF (p3%alloc_poly) THEN
              IF (p3%ndim /= p1%ndim) THEN
-               write(out_unitp,*) ' ERROR in p1TIMEp2TOp3'
-               write(out_unitp,*) ' p3 is allocated so'
-               write(out_unitp,*) ' ndim of p3 and p1 (or p2) MUST be identical'
-               write(out_unitp,*) ' ndim of p1,p2 p3:',p1%ndim,p2%ndim,p3%ndim
+               write(out_unit,*) ' ERROR in p1TIMEp2TOp3'
+               write(out_unit,*) ' p3 is allocated so'
+               write(out_unit,*) ' ndim of p3 and p1 (or p2) MUST be identical'
+               write(out_unit,*) ' ndim of p1,p2 p3:',p1%ndim,p2%ndim,p3%ndim
                STOP
              END IF
 
              npoly3 = p1%npoly + p2%npoly
              IF (p3%npoly < npoly3) THEN
-               write(out_unitp,*) ' ERROR in p1TIMEp2TOp3'
-               write(out_unitp,*) ' p3 is allocated so'
-               write(out_unitp,*) ' p3%npoly MUST be >= p1%npoly + p2%npoly'
-               write(out_unitp,*) ' npoly p1,p2 p3:',p1%npoly,p2%npoly,p3%npoly
+               write(out_unit,*) ' ERROR in p1TIMEp2TOp3'
+               write(out_unit,*) ' p3 is allocated so'
+               write(out_unit,*) ' p3%npoly MUST be >= p1%npoly + p2%npoly'
+               write(out_unit,*) ' npoly p1,p2 p3:',p1%npoly,p2%npoly,p3%npoly
                STOP
              END IF
            ELSE
@@ -628,7 +628,7 @@
 
                  ind3(:) = p1%ind(:,i1) + p2%ind(:,i2)
                  i3 = locate(p3,ind3)
-!                  write(out_unitp,*) 'i3', i3
+!                  write(out_unit,*) 'i3', i3
                  p3%Ccoef(i3) = p3%Ccoef(i3) + p1%Ccoef(i1)*p2%Ccoef(i2)
 
                END DO
@@ -714,7 +714,7 @@
 
            IF (debug) THEN
              CALL write_poly(p3)
-             write(out_unitp,*) ' END ',name_sub
+             write(out_unit,*) ' END ',name_sub
            END IF
 
 
@@ -749,31 +749,31 @@
 
 
            IF (debug) THEN
-             write(out_unitp,*) ' BEGINNING ',name_sub
+             write(out_unit,*) ' BEGINNING ',name_sub
              CALL write_poly(p1)
            END IF
 
            IF (p2%alloc_poly) THEN
              IF (p2%ndim /= p1%ndim) THEN
-               write(out_unitp,*) ' ERROR in d1p1TOp2'
-               write(out_unitp,*) ' p2 is allocated so'
-               write(out_unitp,*) ' ndim of p2 and p1 MUST be identical'
-               write(out_unitp,*) ' ndim of p1,p2:',p1%ndim,p2%ndim
+               write(out_unit,*) ' ERROR in d1p1TOp2'
+               write(out_unit,*) ' p2 is allocated so'
+               write(out_unit,*) ' ndim of p2 and p1 MUST be identical'
+               write(out_unit,*) ' ndim of p1,p2:',p1%ndim,p2%ndim
                STOP
              END IF
 
              npoly2 = max(0,p1%npoly-1)
              IF (p2%npoly < npoly2) THEN
-               write(out_unitp,*) ' ERROR in d1p1TOp2'
-               write(out_unitp,*) ' p2 is allocated so'
-               write(out_unitp,*) ' p2%npoly MUST be >= p1%npoly-1'
-               write(out_unitp,*) ' npoly p1,p2:',p1%npoly,p2%npoly
+               write(out_unit,*) ' ERROR in d1p1TOp2'
+               write(out_unit,*) ' p2 is allocated so'
+               write(out_unit,*) ' p2%npoly MUST be >= p1%npoly-1'
+               write(out_unit,*) ' npoly p1,p2:',p1%npoly,p2%npoly
                STOP
              END IF
              IF (p1%cplx .AND. .NOT. p2%cplx) THEN
-               write(out_unitp,*) ' ERROR in d1p1TOp2'
-               write(out_unitp,*) ' p1 is complex and not p2 !'
-               write(out_unitp,*) ' p1%cplx, p2%cplx',p1%cplx,p2%cplx
+               write(out_unit,*) ' ERROR in d1p1TOp2'
+               write(out_unit,*) ' p1 is complex and not p2 !'
+               write(out_unit,*) ' p1%cplx, p2%cplx',p1%cplx,p2%cplx
                STOP
              END IF
            ELSE
@@ -834,7 +834,7 @@
 
            IF (debug) THEN
              CALL write_poly(p2)
-             write(out_unitp,*) ' END ',name_sub
+             write(out_unit,*) ' END ',name_sub
            END IF
 
         END SUBROUTINE d1p1TOp2
@@ -874,32 +874,32 @@
            CALL check_alloc_poly(p1,'p1',name_sub)
 
            IF (debug) THEN
-             write(out_unitp,*) ' BEGINNING ',name_sub
+             write(out_unit,*) ' BEGINNING ',name_sub
 
-             write(out_unitp,*) ' ivar,cplx',ivar,cplx
+             write(out_unit,*) ' ivar,cplx',ivar,cplx
              IF (cplx) THEN
-               write(out_unitp,*) ' Ca,Cb',Ca,Cb
+               write(out_unit,*) ' Ca,Cb',Ca,Cb
              ELSE
-               write(out_unitp,*) ' Ra,Rb',Ra,Rb
+               write(out_unit,*) ' Ra,Rb',Ra,Rb
              END IF
              CALL write_poly(p1)
            END IF
 
            IF (p2%alloc_poly) THEN
              IF (p2%ndim /= p1%ndim) THEN
-               write(out_unitp,*) ' ERROR in p1_linearTransfoTOp2'
-               write(out_unitp,*) ' p2 is allocated so'
-               write(out_unitp,*) ' ndim of p2 and p1 MUST be identical'
-               write(out_unitp,*) ' ndim of p1 p2:',p1%ndim,p2%ndim
+               write(out_unit,*) ' ERROR in p1_linearTransfoTOp2'
+               write(out_unit,*) ' p2 is allocated so'
+               write(out_unit,*) ' ndim of p2 and p1 MUST be identical'
+               write(out_unit,*) ' ndim of p1 p2:',p1%ndim,p2%ndim
                STOP
              END IF
 
              npoly3 = p1%npoly
              IF (p2%npoly < npoly3) THEN
-               write(out_unitp,*) ' ERROR in p1_linearTransfoTOp2'
-               write(out_unitp,*) ' p2 is allocated so'
-               write(out_unitp,*) ' p2%npoly MUST be >= p1%npoly'
-               write(out_unitp,*) ' npoly p1 p2:',p1%npoly,p2%npoly
+               write(out_unit,*) ' ERROR in p1_linearTransfoTOp2'
+               write(out_unit,*) ' p2 is allocated so'
+               write(out_unit,*) ' p2%npoly MUST be >= p1%npoly'
+               write(out_unit,*) ' npoly p1 p2:',p1%npoly,p2%npoly
                STOP
              END IF
            ELSE
@@ -911,18 +911,18 @@
 
            IF (p1%cplx .OR. cplx) THEN
              IF (.NOT. p2%cplx) THEN
-               write(out_unitp,*) ' ERROR in p1_linearTransfoTOp2'
-               write(out_unitp,*) ' p2 MUST be complex'
-               write(out_unitp,*) ' p2%cplx',p2%cplx
+               write(out_unit,*) ' ERROR in p1_linearTransfoTOp2'
+               write(out_unit,*) ' p2 MUST be complex'
+               write(out_unit,*) ' p2%cplx',p2%cplx
                STOP
              END IF
            END IF
 
 
            IF (ivar < 0 .OR. ivar > p1%ndim) THEN
-             write(out_unitp,*) ' ERROR in p1_linearTransfoTOp2'
-             write(out_unitp,*) ' ivar MUST be > 0 or < ndim'
-             write(out_unitp,*) 'ivar,ndim',ivar,p1%ndim
+             write(out_unit,*) ' ERROR in p1_linearTransfoTOp2'
+             write(out_unit,*) ' ivar MUST be > 0 or < ndim'
+             write(out_unit,*) 'ivar,ndim',ivar,p1%ndim
              STOP
            END IF
 
@@ -944,14 +944,14 @@
                  ind_exp(1:p1%ndim) = p1%ind(:,i1)
                  exp_ivar = p1%ind(ivar,i1)
 
-!                write(out_unitp,*) 'i1,exp_ivar,p1%ind',
+!                write(out_unit,*) 'i1,exp_ivar,p1%ind',
 !    *                       i1,exp_ivar,p1%ind(:,i1)
 !                devlopment of coef*(aX+b)^exp_ivar
                  DO k=0,exp_ivar
                    ind_exp(ivar) = k
                    ind_exp(0) = sum(ind_exp(1:p1%ndim))
                    i3 = locate(p2,ind_exp(1:p1%ndim))
-!                  write(out_unitp,*) 'k,ind_exp,i3,p2%ind',
+!                  write(out_unit,*) 'k,ind_exp,i3,p2%ind',
 !    *                k,ind_exp(1:p1%ndim),i3,p2%ind(:,i3)
                    p2%Ccoef(i3) = p2%Ccoef(i3) +                        &
                      p1%Ccoef(i1)*cmplx(binomial(exp_ivar,k),kind=Rkind) *&
@@ -995,7 +995,7 @@
 
            IF (debug) THEN
              CALL write_poly(p2)
-             write(out_unitp,*) ' END ',name_sub
+             write(out_unit,*) ' END ',name_sub
            END IF
         END SUBROUTINE p1_linearTransfoTOp2
 

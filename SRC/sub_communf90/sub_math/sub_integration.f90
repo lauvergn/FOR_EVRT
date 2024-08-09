@@ -33,7 +33,7 @@
 !
 !=============================================================
       FUNCTION integration_pot(n1,n2,x,w,nb_gauss,poly_g,pot_g,nb_niv)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
       real(kind=Rkind) integration_pot
 
@@ -51,7 +51,7 @@
          val = val + w(i)*poly_g(n1,i)*poly_g(n2,i)*pot_g(i)
        END DO
 
-!      write(out_unitp,*) val,n1,n2
+!      write(out_unit,*) val,n1,n2
        integration_pot =  val
 
        end function integration_pot
@@ -62,7 +62,7 @@
 !
 !=============================================================
       FUNCTION integration_T_g1(n1,n2,x,w,nb_gauss,poly_g,T_g1,nb_niv)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
       real(kind=Rkind) :: integration_T_g1
 
@@ -78,12 +78,12 @@
 
        val = ZERO
        DO i=1,nb_gauss
-!        write(out_unitp,*) ' integration_T_g1 :',i,x(i),
+!        write(out_unit,*) ' integration_T_g1 :',i,x(i),
 !    *                 d1poly_legendre(x(i),n2),T_g1(i)
          val = val + w(i)*poly_g(n1,i)*d1poly_legendre(x(i),n2)*T_g1(i)
        END DO
 
-!      write(out_unitp,*) val,n1,n2
+!      write(out_unit,*) val,n1,n2
        integration_T_g1 =  val
 
        end function integration_T_g1
@@ -94,7 +94,7 @@
 !
 !=============================================================
       SUBROUTINE gauss_box(x,w,n)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        integer n
@@ -116,7 +116,7 @@
          w(i)   = wi
          x(i)   = x0
 
-!        write(out_unitp,*) i,nn+i,nn+1-i,wi,x0
+!        write(out_unit,*) i,nn+i,nn+1-i,wi,x0
 
        END DO
 
@@ -128,7 +128,7 @@
 !
 !=============================================================
       SUBROUTINE gauss_box_nosym(x,w,n)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        integer n
@@ -150,7 +150,7 @@
          w(i)   = wi
          x(i)   = x0
 
-!        write(out_unitp,*) i,nn+i,nn+1-i,wi,x0
+!        write(out_unit,*) i,nn+i,nn+1-i,wi,x0
 
        END DO
 
@@ -162,7 +162,7 @@
 !
 !=============================================================
       SUBROUTINE gauss_fourier(x,w,n)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        integer n
@@ -186,7 +186,7 @@
 
          x(i)   = x0
 
-!        write(out_unitp,*) i,wi,x0
+!        write(out_unit,*) i,wi,x0
 
        END DO
 
@@ -197,7 +197,7 @@
 !
 !=============================================================
       SUBROUTINE gauss_cheby(x,w,n)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        integer :: n
@@ -221,7 +221,7 @@
 
        end subroutine gauss_cheby
       SUBROUTINE gauss_chebyWeight(x,w,n)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        integer :: n
@@ -252,7 +252,7 @@
 !
 !=============================================================
       SUBROUTINE gauleg128(x1,x2,x,w,n)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        integer            :: n
@@ -299,7 +299,7 @@
        RETURN
        end subroutine gauleg128
       SUBROUTINE gauleg(x1,x2,x,w,n)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        integer n,m,i,j,it
@@ -345,7 +345,7 @@
        END DO
 
 !      DO i=1,n
-!       write(out_unitp,*) x(i),w(i)
+!       write(out_unit,*) x(i),w(i)
 !      END DO
 !
        RETURN
@@ -358,7 +358,7 @@
 !=============================================================
 
       SUBROUTINE hercom ( norder, xtab, weight )
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 !
 !***********************************************************************
@@ -483,7 +483,7 @@
       return
       end subroutine hercom
       SUBROUTINE herrec ( p2, dp2, p1, x, norder )
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 !
 !***********************************************************************
@@ -544,7 +544,7 @@
 
       end subroutine herrec
       SUBROUTINE herroot ( x, norder, dp2, p1 )
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 !
 !***********************************************************************
@@ -603,7 +603,7 @@
       return
       end subroutine herroot
       SUBROUTINE herset ( norder, xtab, weight )
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 !
 !***********************************************************************
@@ -1549,7 +1549,7 @@ subroutine en_r2_01_1 ( n, o, x, w )
 !
 !    Output, real ( kind=Rkind ) W(O), the weights.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -1615,7 +1615,7 @@ subroutine en_r2_01_1_size ( n, o )
 !
 !    Output, integer ( kind = 4 ) O, the order.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -1672,7 +1672,7 @@ subroutine en_r2_02_xiu ( n, o, x, w )
 !
 !    Output, real ( kind=Rkind ) W(O), the weights.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -1768,7 +1768,7 @@ subroutine en_r2_02_xiu_size ( n, o )
 !
 !    Output, integer ( kind = 4 ) O, the order.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -1824,7 +1824,7 @@ subroutine en_r2_03_1 ( n, o, x, w )
 !
 !    Output, real ( kind=Rkind ) W(O), the weights.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -1902,7 +1902,7 @@ subroutine en_r2_03_1_size ( n, o )
 !
 !    Output, integer ( kind = 4 ) O, the order.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -1958,7 +1958,7 @@ subroutine en_r2_03_2 ( n, o, x, w )
 !
 !    Output, real ( kind=Rkind ) W(O), the weights.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -2048,7 +2048,7 @@ subroutine en_r2_03_2_size ( n, o )
 !
 !    Output, integer ( kind = 4 ) O, the order.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -2105,7 +2105,7 @@ subroutine en_r2_03_xiu ( n, o, x, w )
 !
 !    Output, real ( kind=Rkind ) W(O), the weights.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   real ( kind=Rkind ) arg
@@ -2189,7 +2189,7 @@ subroutine en_r2_03_xiu_size ( n, o )
 !
 !    Output, integer ( kind = 4 ) O, the order.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -2259,7 +2259,7 @@ subroutine en_r2_05_1 ( n, option, o, x, w )
 !
 !    Output, real ( kind=Rkind ) W(O), the weights.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -2493,7 +2493,7 @@ subroutine en_r2_05_1_size ( n, option, o)
 !
 !    Output, integer ( kind = 4 ) O, the order.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -2576,7 +2576,7 @@ subroutine en_r2_05_2 ( n, o, x, w )
 !
 !    Output, real ( kind=Rkind ) W(O), the weights.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -2692,7 +2692,7 @@ subroutine en_r2_05_2_size ( n, o )
 !
 !    Output, integer ( kind = 4 ) O, the order.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -2751,7 +2751,7 @@ subroutine en_r2_05_3 ( n, o, x, w )
 !
 !    Output, real ( kind=Rkind ) W(O), the weights.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -2866,7 +2866,7 @@ subroutine en_r2_05_3_size ( n, o )
 !
 !    Output, integer ( kind = 4 ) O, the order.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -2931,7 +2931,7 @@ subroutine en_r2_05_4 ( n, o, x, w )
 !
 !    Output, real ( kind=Rkind ) W(O), the weights.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -3037,7 +3037,7 @@ subroutine en_r2_05_4_size ( n, o )
 !
 !    Output, integer ( kind = 4 ) O, the order.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -3096,7 +3096,7 @@ subroutine en_r2_05_5 ( n, o, x, w )
 !
 !    Output, real ( kind=Rkind ) W(O), the weights.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -3227,7 +3227,7 @@ subroutine en_r2_05_5_size ( n, o )
 !
 !    Output, integer ( kind = 4 ) O, the order.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -3286,7 +3286,7 @@ subroutine en_r2_05_6 ( n, o, x, w )
 !
 !    Output, real ( kind=Rkind ) W(O), the weights.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -3427,7 +3427,7 @@ subroutine en_r2_05_6_size ( n, o )
 !
 !    Output, integer ( kind = 4 ) O, the order.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -3501,7 +3501,7 @@ subroutine en_r2_07_1 ( n, option, o, x, w )
 !
 !    Output, real ( kind=Rkind ) W(O), the weights.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -3693,7 +3693,7 @@ subroutine en_r2_07_1_size ( n, option, o )
 !
 !    Output, integer ( kind = 4 ) O, the order.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -3789,7 +3789,7 @@ subroutine en_r2_07_2 ( n, o, x, w )
 !
 !    Output, real ( kind=Rkind ) W(O), the weights.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -3989,7 +3989,7 @@ subroutine en_r2_07_2_size ( n, o )
 !
 !    Output, integer ( kind = 4 ) O, the order.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -4078,7 +4078,7 @@ subroutine en_r2_07_3 ( n, option, o, x, w )
 !
 !    Output, real ( kind=Rkind ) W(O), the weights.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -4387,7 +4387,7 @@ subroutine en_r2_07_3_size ( n, option, o )
 !
 !    Output, integer ( kind = 4 ) O, the order.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -4476,7 +4476,7 @@ subroutine en_r2_09_1 ( n, option, o, x, w )
 !
 !    Output, real ( kind=Rkind ) W(O), the weights.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -4988,7 +4988,7 @@ subroutine en_r2_09_1_size ( n, option, o )
 !
 !    Output, integer ( kind = 4 ) O, the order.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -5078,7 +5078,7 @@ subroutine en_r2_11_1 ( n, option, o, x, w )
 !
 !    Output, real ( kind=Rkind ) W(O), the weights.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n
@@ -6235,7 +6235,7 @@ subroutine en_r2_11_1_size ( n, option, o )
 !
 !    Output, integer ( kind = 4 ) O, the order.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind = 4 ) n

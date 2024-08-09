@@ -27,7 +27,7 @@
 !===============================================================================
 !===============================================================================
 SUBROUTINE PREFFT(N,MODE,NEXP,W)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
       integer :: N,MODE,NEXP
@@ -55,7 +55,7 @@ SUBROUTINE PREFFT(N,MODE,NEXP,W)
        end subroutine PREFFT
 
       SUBROUTINE FFT(N,MODE,TT,NEXP,W,X)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        integer :: N,MODE,NEXP

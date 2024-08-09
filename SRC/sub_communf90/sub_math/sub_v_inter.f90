@@ -55,7 +55,7 @@
 !================================================================
 
        real*8 FUNCTION v_inter2(x,ndim,ntyp,nom,nsurf)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        integer max_dim,nsurf,newsurf
@@ -95,7 +95,7 @@
        IF (begin .OR. nsurf .NE. newsurf) THEN
          newsurf = nsurf
          CALL read_para1d(F,nn,n,ndim,max_fit,nom,exist,nsurf)
-         write(out_unitp,*) nom,nn,n,ndim,nsurf
+         write(out_unit,*) nom,nn,n,ndim,nsurf
          IF ( .NOT. exist) STOP
          begin=.FALSE.
        END IF
@@ -103,7 +103,7 @@
 !---------------------------------------------------------------
 
        nn = n(0)
-!      write(out_unitp,*) 'BEGINING v_inter2',ntyp,ndim,nn,n
+!      write(out_unit,*) 'BEGINING v_inter2',ntyp,ndim,nn,n
 
        SELECT CASE (ntyp)
          CASE (1)
@@ -181,7 +181,7 @@
 
 
 
-!      write(out_unitp,*) 'END v_inter2',x,v_inter2
+!      write(out_unit,*) 'END v_inter2',x,v_inter2
 
        end function v_inter2
 !================================================================
@@ -189,7 +189,7 @@
 !================================================================
 
        FUNCTION v1_inter(x,ndim)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real*8 :: v1_inter
@@ -237,7 +237,7 @@
 !================================================================
 
        FUNCTION v2_inter(x,ndim)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real*8 :: v2_inter
@@ -283,7 +283,7 @@
 !    fonction vgene_inter(x,ndim) 1 D
 !================================================================
        FUNCTION vgene_inter(x,ndim,v_typ,F,nn,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real*8 :: vgene_inter
@@ -300,25 +300,25 @@
        real*8 v_typ
 !      ---------------------------------------------------------
 
-!      write(out_unitp,*) 'BEGINING vgene_inter',ndim,nn,n
+!      write(out_unit,*) 'BEGINING vgene_inter',ndim,nn,n
 
 
        z=ZERO
        DO kl=1,nn
          z = z + F(kl) * v_typ(x,ndim,kl,n)
-!        write(out_unitp,*) z,F(kl),ndim,nn,n
+!        write(out_unit,*) z,F(kl),ndim,nn,n
        END DO
 
        vgene_inter = z
 
-!      write(out_unitp,*) 'END vgene_inter',x,z,ndim,nn,n
+!      write(out_unit,*) 'END vgene_inter',x,z,ndim,nn,n
 
        end function vgene_inter
 !================================================================
 !    fonction vgene_inter(x,ndim) 1 D
 !================================================================
        FUNCTION vgene_inter2(x,ndim,F,nn,n,ntyp)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real(kind=Rkind) :: vgene_inter
@@ -336,21 +336,21 @@
        real(kind=Rkind) :: v
 !      ---------------------------------------------------------
 
-!      write(out_unitp,*) 'BEGINING vgene_inter2',ndim,nn,n
-!      write(out_unitp,*) 'F(:)',F
-!      write(out_unitp,*) 'x',x
+!      write(out_unit,*) 'BEGINING vgene_inter2',ndim,nn,n
+!      write(out_unit,*) 'F(:)',F
+!      write(out_unit,*) 'x',x
 
 
        z=ZERO
        DO kl=1,nn
          z = z + F(kl) * v(x,ndim,kl,n,ntyp)
-         !write(out_unitp,*) z,F(kl),ndim,nn,n
+         !write(out_unit,*) z,F(kl),ndim,nn,n
          !flush(6)
        END DO
 
        vgene_inter2 = z
 
-!      write(out_unitp,*) 'END vgene_inter2',x,z,ndim,nn,n
+!      write(out_unit,*) 'END vgene_inter2',x,z,ndim,nn,n
 
        end function vgene_inter2
 

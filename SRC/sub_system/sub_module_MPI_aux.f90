@@ -37,7 +37,7 @@
 !>  -
 !=======================================================================================
 MODULE mod_MPI_aux
-  USE mod_system
+  USE FOR_EVRT_system_m
   IMPLICIT NONE
 
   !-------------------------------------------------------------------------------------
@@ -224,7 +224,7 @@ MODULE mod_MPI_aux
         ENDDO
 120     CONTINUE
         CLOSE(100)
-        write(out_unitp,121) name,memory_RSS,MPI_id    ! kB
+        write(out_unit,121) name,memory_RSS,MPI_id    ! kB
 121     format('memory check at ',a,': ',i4,' from ',i4)
       ENDIF
 
@@ -482,7 +482,7 @@ MODULE mod_MPI_aux
       ELSE
         IF(present(ndim0)) THEN
           IF(present(ndim)) THEN
-            IF(ndim0>=ndim) write(out_unitp,*) 'error increase matrix, ndim<=ndim0'
+            IF(ndim0>=ndim) write(out_unit,*) 'error increase matrix, ndim<=ndim0'
             new_dim=ndim
           ELSE IF(present(double_size)) THEN
             new_dim=ndim0*2

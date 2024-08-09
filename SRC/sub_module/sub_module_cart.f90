@@ -27,7 +27,7 @@
 !===============================================================================
 !===============================================================================
       MODULE mod_cart
-      USE mod_system
+      USE FOR_EVRT_system_m
       USE mod_dnSVM
       IMPLICIT NONE
 
@@ -59,8 +59,8 @@
 
         IF (present(nb_at)) THEN
           IF (nb_at < 1) THEN
-             write(out_unitp,*) ' ERROR in alloc_Type_cart'
-             write(out_unitp,*) ' nb_at is present and < 1 !!'
+             write(out_unit,*) ' ERROR in alloc_Type_cart'
+             write(out_unit,*) ' nb_at is present and < 1 !!'
              STOP
           END IF
           para_cart%nb_at = nb_at
@@ -77,8 +77,8 @@
 
         IF (present(nb_vect)) THEN
           IF (nb_vect < 1) THEN
-             write(out_unitp,*) ' ERROR in alloc_Type_cart'
-             write(out_unitp,*) ' nb_vect is present and < 1 !!'
+             write(out_unit,*) ' ERROR in alloc_Type_cart'
+             write(out_unit,*) ' nb_vect is present and < 1 !!'
              STOP
           END IF
           para_cart%nb_vect = nb_vect
@@ -137,25 +137,25 @@
 
       integer           :: i
 
-      write(out_unitp,*) 'WRITE Type_cart'
-      write(out_unitp,*)
+      write(out_unit,*) 'WRITE Type_cart'
+      write(out_unit,*)
       IF (para_cart%nb_at > 0) THEN
-        write(out_unitp,*) 'Cartesian coordinates of the atoms:'
+        write(out_unit,*) 'Cartesian coordinates of the atoms:'
         DO i=1,para_cart%nb_at
-          write(out_unitp,*) 'Atom,',i,para_cart%masses(i),para_cart%dnAt(i)%d0(:)
+          write(out_unit,*) 'Atom,',i,para_cart%masses(i),para_cart%dnAt(i)%d0(:)
         END DO
-        write(out_unitp,*) 'Mtot: ',para_cart%Mtot
+        write(out_unit,*) 'Mtot: ',para_cart%Mtot
       END IF
 
       IF (para_cart%nb_vect > 0) THEN
-        write(out_unitp,*) 'Cartesian coordinates of the vectors:'
+        write(out_unit,*) 'Cartesian coordinates of the vectors:'
         DO i=1,para_cart%nb_vect
-          write(out_unitp,*) 'Vector,',i,para_cart%dnVect(i)%d0(:)
+          write(out_unit,*) 'Vector,',i,para_cart%dnVect(i)%d0(:)
         END DO
       END IF
 
-      write(out_unitp,*)
-      write(out_unitp,*) 'END WRITE Type_cart'
+      write(out_unit,*)
+      write(out_unit,*) 'END WRITE Type_cart'
 
 
       END SUBROUTINE write_Type_cart

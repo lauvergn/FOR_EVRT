@@ -27,7 +27,7 @@
 !===============================================================================
 !===============================================================================
       MODULE mod_GWP
-      USE mod_system
+      USE FOR_EVRT_system_m
       USE mod_poly
       IMPLICIT NONE
 
@@ -118,9 +118,9 @@
 
         IF ( (A%init0 .EQV. A%notinit0) .OR.                            &
              (A%notinit0 .AND. .NOT. A%init0) ) THEN
-          write(out_unitp,*) ' ERROR in ',name_sub
-          write(out_unitp,*) name_A,' has NOT been initiated with "init0_"'
-          write(out_unitp,*) ' CHECK the source!!!!!'
+          write(out_unit,*) ' ERROR in ',name_sub
+          write(out_unit,*) name_A,' has NOT been initiated with "init0_"'
+          write(out_unit,*) ' CHECK the source!!!!!'
           STOP
         END IF
       END SUBROUTINE check_init0_GWP
@@ -136,8 +136,8 @@
            CALL check_init0_GWP(GWP,'GWP','alloc_GWP')
 
            IF (ndim <=0) THEN
-             write(out_unitp,*) ' ERROR in alloc_GWP'
-             write(out_unitp,*) ' ndim MUST be > 0',ndim
+             write(out_unit,*) ' ERROR in alloc_GWP'
+             write(out_unit,*) ' ndim MUST be > 0',ndim
              STOP
            END IF
            GWP%ndim = ndim
@@ -235,43 +235,43 @@
            CALL check_init0_GWP(GWP,'GWP','write_GWP')
 
            IF (GWP%alloc_GWP) THEN
-             write(out_unitp,*) '---------------------'
-             write(out_unitp,*) '-- write_GWP --------'
-             write(out_unitp,*) 'init0,alloc_GWP',GWP%init0,GWP%alloc_GWP
-             write(out_unitp,*) 'cplx,linearization',GWP%cplx,GWP%linearization
-             write(out_unitp,*) 'trajectory',GWP%trajectory
-             write(out_unitp,*) 'ndim',GWP%ndim
+             write(out_unit,*) '---------------------'
+             write(out_unit,*) '-- write_GWP --------'
+             write(out_unit,*) 'init0,alloc_GWP',GWP%init0,GWP%alloc_GWP
+             write(out_unit,*) 'cplx,linearization',GWP%cplx,GWP%linearization
+             write(out_unit,*) 'trajectory',GWP%trajectory
+             write(out_unit,*) 'ndim',GWP%ndim
              ndim = GWP%ndim
-             write(out_unitp,*) 'Qmean'
-             CALL Write_Vec(GWP%Qmean,out_unitp,5)
-             write(out_unitp,*) 'Pmean'
-             CALL Write_Vec(GWP%Pmean,out_unitp,5)
+             write(out_unit,*) 'Qmean'
+             CALL Write_Vec(GWP%Qmean,out_unit,5)
+             write(out_unit,*) 'Pmean'
+             CALL Write_Vec(GWP%Pmean,out_unit,5)
              IF (GWP%cplx .AND. .NOT. GWP%trajectory) THEN
-               write(out_unitp,*) 'phase',GWP%Cphase
-               write(out_unitp,*) 'Amean'
-               CALL Write_Mat(GWP%CAmean,out_unitp,5)
+               write(out_unit,*) 'phase',GWP%Cphase
+               write(out_unit,*) 'Amean'
+               CALL Write_Mat(GWP%CAmean,out_unit,5)
                IF (GWP%linearization) THEN
-                 write(out_unitp,*) 'Z'
-                 CALL Write_Mat(GWP%CZ,out_unitp,5)
-                 write(out_unitp,*) 'PZ'
-                 CALL Write_Mat(GWP%CPZ,out_unitp,5)
+                 write(out_unit,*) 'Z'
+                 CALL Write_Mat(GWP%CZ,out_unit,5)
+                 write(out_unit,*) 'PZ'
+                 CALL Write_Mat(GWP%CPZ,out_unit,5)
                END IF
              ELSE IF (.NOT. GWP%cplx .AND. .NOT. GWP%trajectory) THEN
-               write(out_unitp,*) 'phase',GWP%Rphase
-               write(out_unitp,*) 'Amean'
-               CALL Write_Mat(GWP%RAmean,out_unitp,5)
+               write(out_unit,*) 'phase',GWP%Rphase
+               write(out_unit,*) 'Amean'
+               CALL Write_Mat(GWP%RAmean,out_unit,5)
                IF (GWP%linearization) THEN
-                 write(out_unitp,*) 'Z'
-                 CALL Write_Mat(GWP%RZ,out_unitp,5)
-                 write(out_unitp,*) 'PZ'
-                 CALL Write_Mat(GWP%RPZ,out_unitp,5)
+                 write(out_unit,*) 'Z'
+                 CALL Write_Mat(GWP%RZ,out_unit,5)
+                 write(out_unit,*) 'PZ'
+                 CALL Write_Mat(GWP%RPZ,out_unit,5)
                END IF
              END IF
            ELSE
-             write(out_unitp,*) '---------------------'
-             write(out_unitp,*) ' The GWP is NOT allocated : no write!'
-             write(out_unitp,*) 'init0,alloc_GWP',GWP%init0,GWP%alloc_GWP
-             write(out_unitp,*) '---------------------'
+             write(out_unit,*) '---------------------'
+             write(out_unit,*) ' The GWP is NOT allocated : no write!'
+             write(out_unit,*) 'init0,alloc_GWP',GWP%init0,GWP%alloc_GWP
+             write(out_unit,*) '---------------------'
            END IF
 
         END SUBROUTINE write_GWP
@@ -346,9 +346,9 @@
 
         IF ( (A%init0 .EQV. A%notinit0) .OR.                            &
              (A%notinit0 .AND. .NOT. A%init0) ) THEN
-          write(out_unitp,*) ' ERROR in ',name_sub
-          write(out_unitp,*) name_A,' has NOT been initiated with "init0_"'
-          write(out_unitp,*) ' CHECK the source!!!!!'
+          write(out_unit,*) ' ERROR in ',name_sub
+          write(out_unit,*) name_A,' has NOT been initiated with "init0_"'
+          write(out_unit,*) ' CHECK the source!!!!!'
           STOP
         END IF
       END SUBROUTINE check_init0_LHA
@@ -361,8 +361,8 @@
           CALL check_init0_LHA(param_LHA,'param_LHA','alloc_LHA')
 
           IF (ndim <=0) THEN
-            write(out_unitp,*) ' ERROR in alloc_param_LHA'
-            write(out_unitp,*) ' ndim MUST be > 0',ndim
+            write(out_unit,*) ' ERROR in alloc_param_LHA'
+            write(out_unit,*) ' ndim MUST be > 0',ndim
             STOP
           END IF
           param_LHA%ndim = ndim

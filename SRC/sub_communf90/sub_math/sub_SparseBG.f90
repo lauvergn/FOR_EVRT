@@ -40,7 +40,7 @@ function choose ( n, k )
 !    Output, integer ( kind=Ikind ) CHOOSE, the number of combinations of N
 !    things taken K at a time.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) choose
@@ -180,7 +180,7 @@ subroutine comp_next ( n, k, a, more, h, t )
 !    computation.  The user should allocate space for these in the calling
 !    program, include them in the calling sequence, but never alter them!
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) k
@@ -245,7 +245,7 @@ subroutine dtable_close_write ( output_unit )
 !
 !    Input, integer OUTPUT_UNIT, the output unit that was used.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer output_unit
@@ -287,7 +287,7 @@ subroutine dtable_data_write ( output_unit, m, n, table )
 !
 !    Input, real ( kind=Rkind ) TABLE(M,N), the table data.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) m
@@ -341,7 +341,7 @@ subroutine dtable_header_write ( output_file_name, output_unit, m, n )
 !
 !    Input, integer ( kind=Ikind ) N, the number of points.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) m
@@ -389,7 +389,7 @@ subroutine dtable_open_write ( output_file_name, output_unit )
 !
 !    Output, integer OUTPUT_UNIT, the output unit to be used.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   character ( len = * ) output_file_name
@@ -442,7 +442,7 @@ subroutine dtable_write ( output_file_name, m, n, table, header )
 !
 !    Input, logical HEADER, is TRUE if the header is to be included.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) m
@@ -501,7 +501,7 @@ subroutine get_unit ( iunit )
 !
 !    Output, integer ( kind=Ikind ) IUNIT, the free unit number.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) i
@@ -573,7 +573,7 @@ subroutine hermite_abscissa ( dim_num, point_num, grid_index, grid_base, &
 !    Output, real ( kind=Rkind ) GRID_POINT(DIM_NUM), the grid points of
 !    abscissas.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) dim_num
@@ -909,7 +909,7 @@ subroutine hermite_weights ( order, weight )
 !    Output, real ( kind=Rkind ) WEIGHT(ORDER), the weights.
 !    The weights are positive, symmetric and should sum to SQRT(PI).
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) order
@@ -1243,7 +1243,7 @@ function i4_huge ( )
 !
 !    Output, integer ( kind=Ikind ) I4_HUGE, a "huge" I4.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   
@@ -1306,7 +1306,7 @@ function i4_log_2 ( i )
 !    Output, integer ( kind=Ikind ) I4_LOG_2, the integer part of the
 !    logarithm base 2 of the absolute value of I.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) i
@@ -1394,7 +1394,7 @@ subroutine index_level_herm ( level, level_max, dim_num, point_num, grid_index, 
 !    the input value of LEVEL, unless the point has an INDEX of 0 and
 !    a corresponding BASE that is NOT zero.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) dim_num
@@ -1523,7 +1523,7 @@ subroutine level_to_order_open ( dim_num, level, order )
 !    Output, integer ( kind=Ikind ) ORDER(DIM_NUM), the order (number of points)
 !    of the 1D rules.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) dim_num
@@ -1583,7 +1583,7 @@ subroutine monomial_integral_hermite ( dim_num, expon, value )
 !
 !    Output, real ( kind=Rkind ) VALUE, the value of the integral.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) dim_num
@@ -1649,7 +1649,7 @@ subroutine monomial_quadrature_hermite ( dim_num, expon, point_num, weight, &
 !
 !    Output, real ( kind=Rkind ) QUAD_ERROR, the quadrature error.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) dim_num
@@ -1726,7 +1726,7 @@ subroutine monomial_value ( dim_num, point_num, x, expon, value )
 !
 !    Output, real ( kind=Rkind ) VALUE(POINT_NUM), the value of the monomial.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) dim_num
@@ -1797,7 +1797,7 @@ subroutine multigrid_index_z ( dim_num, order_1d, order_nd, indx )
 !    the points in the grid.  The second dimension of this array is equal
 !    to the product of the entries of ORDER_1D.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) dim_num
@@ -1864,7 +1864,7 @@ subroutine product_weight_herm ( dim_num, order_1d, order_nd, w_nd )
 !
 !    Output, real ( kind=Rkind ) W_ND(ORDER_ND), the product rule weights.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) dim_num
@@ -1939,7 +1939,7 @@ function r8_factorial2 ( n )
 !    Output, real ( kind=Rkind ) R8_FACTORIAL2, the value of the double
 !    factorial of N.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) n
@@ -1994,7 +1994,7 @@ function r8_huge ( )
 !
 !    Output, real ( kind=Rkind ) R8_HUGE, a "huge" value.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   real    ( kind=Rkind ) r8_huge
@@ -2127,7 +2127,7 @@ subroutine r8vec_direct_product2 ( factor_index, factor_order, factor_value, &
 !
 !    Local, integer REP, the number of blocks of values to set.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) factor_num
@@ -2195,7 +2195,7 @@ subroutine s_blank_delete ( s )
 !
 !    Input/output, character ( len = * ) S, the string to be transformed.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   character c
@@ -2265,7 +2265,7 @@ subroutine sparse_grid_herm ( dim_num, level_max, point_num, grid_weight, &
 ! 
 !    Output, real ( kind=Rkind ) GRID_POINT(DIM_NUM,POINT_NUM), the points.
 ! 
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) dim_num
@@ -2465,7 +2465,7 @@ subroutine sparse_grid_herm_index ( dim_num, level_max, point_num, grid_index, &
 !    the orders of the Gauss-Hermite rules associated with each point 
 !    and dimension.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) dim_num
@@ -2607,7 +2607,7 @@ subroutine sparse_grid_herm_size ( dim_num, level_max, point_num )
 !
 !    Output, integer ( kind=Ikind ) POINT_NUM, the number of points in the grid.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
   
   integer ( kind=Ikind ) dim_num
@@ -2702,7 +2702,7 @@ subroutine timestamp ( )
 !
 !    None
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   character ( len = 8 ) ampm
@@ -2782,7 +2782,7 @@ subroutine timestring ( string )
 !    Output, character ( len = * ) STRING, contains the date information.
 !    A character length of 40 should always be sufficient.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   character ( len = 8 ) ampm
@@ -2906,7 +2906,7 @@ subroutine vec_colex_next2 ( dim_num, base, a, more )
 !    been computed.  If MORE is returned FALSE, ignore the output 
 !    vector and stop calling the routine.
 !
-  USE mod_system
+  USE FOR_EVRT_system_m
   implicit none
 
   integer ( kind=Ikind ) dim_num

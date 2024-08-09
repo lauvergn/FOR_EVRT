@@ -78,7 +78,7 @@
 !================================================================
 
        FUNCTION v(x,ndim,kl,n,ntyp)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v ! function
@@ -175,7 +175,7 @@
           v=v34(x,ndim,kl,n)
 
         CASE default ! ERROR: wrong function !
-          write(out_unitp,*) ' ERROR wrong function, ntyp',ntyp
+          write(out_unit,*) ' ERROR wrong function, ntyp',ntyp
           STOP
         END SELECT
 
@@ -186,7 +186,7 @@
 !================================================================
 
        FUNCTION v1(x,ndim,i,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
        real (kind=Rkind) :: v1 ! function
 
@@ -209,7 +209,7 @@
        mmm = i-l*l
 
 
-!      write(out_unitp,*) 'ylm',i,lll,mmm
+!      write(out_unit,*) 'ylm',i,lll,mmm
 
        v1 = Ylm(th,phi,lll,mmm)
 
@@ -221,7 +221,7 @@
 !================================================================
 
        FUNCTION v2(x,ndim,i,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v2 ! function
@@ -254,8 +254,8 @@
        m = mmm-1
 
 
-!      write(out_unitp,*) 'ylm i,lll,mmm',i,lll,mmm
-!      write(out_unitp,*) 'ylm i,l,m',i,l,m
+!      write(out_unit,*) 'ylm i,lll,mmm',i,lll,mmm
+!      write(out_unit,*) 'ylm i,l,m',i,l,m
 
        v2 = poly_legendre(cos(th),lll,m)*v27(phi,1,mmm,n)
 
@@ -269,7 +269,7 @@
 !================================================================
 
        FUNCTION v2_old(x,ndim,ij,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v2_old ! function
@@ -294,7 +294,7 @@
          beta=ONE
          beta2=ONE
          read(5,molec)
-         write(out_unitp,molec)
+         write(out_unit,molec)
          begin=.FALSE.
        END IF
 ! fin     initialisation la premiere fois
@@ -323,7 +323,7 @@
 
        v2_old = poly_legendre(c,ii,0) * x(2)**jj * th
 
-!      write(out_unitp,*) ij,ii,jj,x,v2
+!      write(out_unit,*) ij,ii,jj,x,v2
 
        RETURN
        end function v2_old
@@ -334,7 +334,7 @@
 !================================================================
 
        FUNCTION v3(x,ndim,ij,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v3 ! function
@@ -358,7 +358,7 @@
          beta=ONE
          beta2=ONE
          read(5,molec)
-         write(out_unitp,molec)
+         write(out_unit,molec)
          begin=.FALSE.
        END IF
 ! fin     initialisation la premiere fois
@@ -382,7 +382,7 @@
        th = exp(-beta2*x(2))
 
        v3 = poly_legendre(c,ii,0) * x(2)**jj * th
-!      write(out_unitp,*) ij,ii,jj,x(1),x(2),v3
+!      write(out_unit,*) ij,ii,jj,x(1),x(2),v3
 
 
        RETURN
@@ -392,7 +392,7 @@
 !================================================================
 
        FUNCTION v_DirProd(x,ndim,ii,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v_DirProd ! function
@@ -424,7 +424,7 @@
 !        STOP
          type_v = [15,15,15,15,15,15]
          read(5,dirprod_typ)
-         write(out_unitp,dirprod_typ)
+         write(out_unit,dirprod_typ)
 
 !        determine un tableau ijk(i,i_func)
 !        qui donne un indice pour la dimension i en fonction de l'ordre de la fonction i_func
@@ -438,12 +438,12 @@
            IF (max_p .LT. n(i)) max_p = n(i)
          END DO
          ind_n(ndim)=-1
-         write(out_unitp,*) 'nn,max_p',n(0),max_p
+         write(out_unit,*) 'nn,max_p',n(0),max_p
 
 
          kk=0
 
-         write(out_unitp,*) 'max_p',max_p
+         write(out_unit,*) 'max_p',max_p
          DO i_func=1,n(0)
 
 !          determine les indices (ind_n) en fonction de i_func
@@ -462,7 +462,7 @@
                ijk(i,kk)=ind_n(i)
              END DO
 
-             write(out_unitp,11) kk,(ijk(i,kk),i=1,ndim)
+             write(out_unit,11) kk,(ijk(i,kk),i=1,ndim)
  11          format(10i3)
 
            END IF
@@ -471,7 +471,7 @@
          n(0) = kk
 
          IF (n(0) .GT. max_fit) THEN
-           write(out_unitp,*) ' ERROR : n(0) > max_fit',n(0),max_fit
+           write(out_unit,*) ' ERROR : n(0) > max_fit',n(0),max_fit
            STOP
          END IF
 
@@ -479,9 +479,9 @@
        END IF
 
        IF (ii .GT. n(0)) THEN
-         write(out_unitp,*) ' ERROR in v_poly or v5'
-         write(out_unitp,*) ' number of function :',n(0)
-         write(out_unitp,*) ' You want the function :',ii
+         write(out_unit,*) ' ERROR in v_poly or v5'
+         write(out_unit,*) ' number of function :',n(0)
+         write(out_unit,*) ' You want the function :',ii
          STOP
        END IF
 
@@ -501,7 +501,7 @@
 !================================================================
 
        FUNCTION v4(x,ndim,i,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v4 ! function
@@ -533,7 +533,7 @@
        IF (begin) THEN
          IF (n(0) == 0 ) n(0) = n(1)*n(2)
          all = .FALSE.
-         write(out_unitp,*) 'n',n
+         write(out_unit,*) 'n',n
          k = 0
          i1 = 0
 
@@ -541,7 +541,7 @@
          DO
            IF (k == n(0) ) EXIT
 
-!          write(out_unitp,*) 'i1,mod(i1,12)',i1,mod(i1,12)
+!          write(out_unit,*) 'i1,mod(i1,12)',i1,mod(i1,12)
            IF (mod(i1,12) == 0 ) THEN
 !            cos(n*3 ) * PLeg(paire)
              name='cos'
@@ -549,7 +549,7 @@
                k = k + 1
                ijk(1,k)=i1+1
                ijk(2,k)=i2+1
-               write(out_unitp,*) k,name,(i1+1)/2,' * PLeg',i2
+               write(out_unit,*) k,name,(i1+1)/2,' * PLeg',i2
                IF (k == n(0) ) EXIT
              END DO
            ELSE IF (mod(i1,12) == 6) THEN
@@ -559,7 +559,7 @@
                k = k + 1
                ijk(1,k)=i1+1
                ijk(2,k)=i2+1
-               write(out_unitp,*) k,name,(i1+1)/2,' * PLeg',i2
+               write(out_unit,*) k,name,(i1+1)/2,' * PLeg',i2
                IF (k == n(0) ) EXIT
              END DO
 
@@ -579,7 +579,7 @@
            IF (mod(ii1,2) == 0) name='cos'
            ijk(1,k)=ii1+1
            ijk(2,k)=i2+1
-           write(out_unitp,*) k,name,(ii1+1)/2,' * Leg',i2
+           write(out_unit,*) k,name,(ii1+1)/2,' * Leg',i2
 
          END DO
          END IF
@@ -610,7 +610,7 @@
 !================================================================
 
        FUNCTION v_poly(x,ndim,ii,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v_poly ! function
@@ -645,12 +645,12 @@
            IF (max_p .LT. n(i)) max_p = n(i)
          END DO
          ind_n(ndim)=-1
-         write(out_unitp,*) 'nn,max_p',n(0),max_p
+         write(out_unit,*) 'nn,max_p',n(0),max_p
 
 
          kk=0
 
-         write(out_unitp,*) 'max_p',max_p
+         write(out_unit,*) 'max_p',max_p
          DO i_func=1,n(0)
 
 !          determine les indices (ind_n) en fonction de i_func
@@ -669,7 +669,7 @@
                ijk(i,kk)=ind_n(i)
              END DO
 
-             write(out_unitp,11) kk,(ijk(i,kk),i=1,ndim)
+             write(out_unit,11) kk,(ijk(i,kk),i=1,ndim)
  11          format(10i3)
 
            END IF
@@ -678,7 +678,7 @@
          n(0) = kk
 
          IF (n(0) .GT. max_fit) THEN
-           write(out_unitp,*) ' ERROR : n(0) > max_fit',n(0),max_fit
+           write(out_unit,*) ' ERROR : n(0) > max_fit',n(0),max_fit
            STOP
          END IF
 
@@ -686,9 +686,9 @@
        END IF
 
        IF (ii .GT. n(0)) THEN
-         write(out_unitp,*) ' ERROR in v_poly or v5'
-         write(out_unitp,*) ' number of function :',n(0)
-         write(out_unitp,*) ' You want the function :',ii
+         write(out_unit,*) ' ERROR in v_poly or v5'
+         write(out_unit,*) ' number of function :',n(0)
+         write(out_unit,*) ' You want the function :',ii
          STOP
        END IF
 
@@ -710,7 +710,7 @@
 !================================================================
 
        FUNCTION v6(x,ndim,i,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v6 ! function
@@ -730,7 +730,7 @@
          Req=1.40104_Rkind
          beta=ONE
          read(5,molec)
-         write(out_unitp,molec)
+         write(out_unit,molec)
          begin=.FALSE.
        END IF
 ! fin     initialisation la premiere fois
@@ -746,7 +746,7 @@
 !================================================================
 
        FUNCTION v7(x,ndim,i,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v7 ! function
@@ -767,7 +767,7 @@
          beta=ONE
          beta2=ZERO
          read(5,molec)
-         write(out_unitp,molec)
+         write(out_unit,molec)
          begin=.FALSE.
        END IF
 ! fin     initialisation la premiere fois
@@ -776,11 +776,11 @@
 !      m = exp(-beta*(x(1)-Req)-beta2/(x(1)-Req))
        m = exp(-beta*(x(1)-Req))
 
-!      write(out_unitp,*) 'x(1),Req,beta,m',x(1),Req,beta,m
+!      write(out_unit,*) 'x(1),Req,beta,m',x(1),Req,beta,m
 
        v7= m**(i-1)
 
-!      write(out_unitp,*) i,x(1),m,v7
+!      write(out_unit,*) i,x(1),m,v7
 
 
        RETURN
@@ -793,7 +793,7 @@
 !================================================================
 
        FUNCTION v8(x,ndim,i,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v8 ! function
@@ -814,7 +814,7 @@
          C(1)=ZERO
          C(2)=ONE
          read(5,molec)
-         write(out_unitp,molec)
+         write(out_unit,molec)
          begin=.FALSE.
        END IF
 ! fin     initialisation la premiere fois
@@ -831,7 +831,7 @@
 !================================================================
 
        FUNCTION v9(x,ndim,i,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v9 ! function
@@ -848,7 +848,7 @@
 
        IF (begin) THEN
          read(5,molec)
-         write(out_unitp,molec)
+         write(out_unit,molec)
          begin=.FALSE.
        END IF
 ! fin     initialisation la premiere fois
@@ -863,7 +863,7 @@
 !================================================================
 
        FUNCTION v10(x,ndim,i,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v10 ! function
@@ -880,14 +880,14 @@
 
        IF (begin) THEN
          read(5,molec)
-         write(out_unitp,molec)
+         write(out_unit,molec)
          begin=.FALSE.
        END IF
 ! fin     initialisation la premiere fois
 
        v10 = 1/x(1)**((i-1)*k)
 
-!      write(out_unitp,*) 'v10=',v10
+!      write(out_unit,*) 'v10=',v10
 
 
        RETURN
@@ -897,7 +897,7 @@
 !================================================================
 
        FUNCTION v11(x,ndim,i,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v11 ! function
@@ -917,7 +917,7 @@
          Req=1.40104_Rkind
          beta=ONE
          read(5,molec)
-         write(out_unitp,molec)
+         write(out_unit,molec)
          begin=.FALSE.
        END IF
 ! fin     initialisation la premiere fois
@@ -932,7 +932,7 @@
        m = exp(-beta*(x(1)-Req))
        v11= x(1)**(i-1) * m
 
-!      write(out_unitp,*) i,x(1),m,v7
+!      write(out_unit,*) i,x(1),m,v7
 
 
        RETURN
@@ -948,7 +948,7 @@
 !    v14 poly legendre impaire
 !================================================================
        FUNCTION v12(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v12 ! function
@@ -968,7 +968,7 @@
        end function v12
 !---------------------------------------------------
        FUNCTION v13(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v13 ! function
@@ -983,14 +983,14 @@
        l = n1+n1-1
        m=0
 
-!      write(out_unitp,*) xx,l,m
+!      write(out_unit,*) xx,l,m
 
        v13 = poly_legendre(xx,l,m)
 
        end function v13
 !---------------------------------------------------
        FUNCTION v14(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v14 ! function
@@ -1017,7 +1017,7 @@
 !    v19 x^i sans i=0
 !================================================================
        FUNCTION v15(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v15 ! function
@@ -1032,12 +1032,12 @@
 
        v15 = xx**i
 
-!      write(out_unitp,*) 'v15:',xx,i
+!      write(out_unit,*) 'v15:',xx,i
 
        end function v15
 !      ---------------------------------------------------------
        FUNCTION v16(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v16 ! function
@@ -1055,7 +1055,7 @@
        end function v16
 !      ---------------------------------------------------------
        FUNCTION v17(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v17 ! function
@@ -1072,7 +1072,7 @@
        end function v17
 !      ---------------------------------------------------------
        FUNCTION v18(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v18 ! function
@@ -1090,7 +1090,7 @@
        end function v18
 !      ---------------------------------------------------------
        FUNCTION v19(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v19 ! function
@@ -1115,7 +1115,7 @@
 !    v24 poly legendre impaire
 !================================================================
        FUNCTION v22(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v22 ! function
@@ -1135,7 +1135,7 @@
        end function v22
 !---------------------------------------------------
        FUNCTION v23(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v23 ! function
@@ -1150,14 +1150,14 @@
        l = n1+n1-1
        m=0
 
-!      write(out_unitp,*) xx,l,m
+!      write(out_unit,*) xx,l,m
 
        v23 = poly_legendre(xx,l,m)
 
        end function v23
 !---------------------------------------------------
        FUNCTION v24(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v24 ! function
@@ -1183,7 +1183,7 @@
 !    v30 serie de fourier en 3x
 !================================================================
        FUNCTION v26(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v26 ! function
@@ -1220,7 +1220,7 @@
 
        end function v26
        FUNCTION v27(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v27 ! function
@@ -1253,7 +1253,7 @@
 
        end function v27
        FUNCTION v28(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v28 ! function
@@ -1282,7 +1282,7 @@
 
        end function v28
        FUNCTION v29(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v29 ! function
@@ -1317,7 +1317,7 @@
        END IF
        end function v29
        FUNCTION v30(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v30 ! function
@@ -1353,7 +1353,7 @@
        end function v30
 
        FUNCTION v41(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
        real (kind=Rkind) :: v41 ! function
 
@@ -1385,7 +1385,7 @@
 
        END
        FUNCTION v51(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
        real (kind=Rkind) :: v51 ! function
 
@@ -1413,7 +1413,7 @@
 
        END
        FUNCTION v42(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
        real (kind=Rkind) :: v42 ! function
 
@@ -1445,7 +1445,7 @@
 
        END
        FUNCTION v52(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
        real (kind=Rkind) :: v52 ! function
 
@@ -1473,7 +1473,7 @@
 
        END
        FUNCTION v43(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
        real (kind=Rkind) :: v43 ! function
 
@@ -1505,7 +1505,7 @@
 
        END
        FUNCTION v53(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
        real (kind=Rkind) :: v53 ! function
 
@@ -1540,7 +1540,7 @@
 !    v34 poly legendre impaire
 !================================================================
        FUNCTION v32(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v32 ! function
@@ -1559,7 +1559,7 @@
        end function v32
 !---------------------------------------------------
        FUNCTION v33(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v33 ! function
@@ -1578,7 +1578,7 @@
        end function v33
 !---------------------------------------------------
        FUNCTION v34(x,ndim,n1,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: v34 ! function
@@ -1628,7 +1628,7 @@
 !    fonction vgene_inter(x,ndim) 1 D
 !================================================================
        FUNCTION vgene_inter(x,ndim,v_typ,F,nn,n)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: vgene_inter ! function
@@ -1644,25 +1644,25 @@
        real (kind=Rkind) :: v_typ
 !      ---------------------------------------------------------
 
-!      write(out_unitp,*) 'BEGINING vgene_inter',ndim,nn,n
+!      write(out_unit,*) 'BEGINING vgene_inter',ndim,nn,n
 
 
        z=ZERO
        DO kl=1,nn
          z = z + F(kl) * v_typ(x,ndim,kl,n)
-!        write(out_unitp,*) z,F(kl),ndim,nn,n
+!        write(out_unit,*) z,F(kl),ndim,nn,n
        END DO
 
        vgene_inter = z
 
-!      write(out_unitp,*) 'END vgene_inter',x,z,ndim,nn,n
+!      write(out_unit,*) 'END vgene_inter',x,z,ndim,nn,n
 
        end function vgene_inter
 !================================================================
 !    fonction vgene_inter(x,ndim) 1 D
 !================================================================
        FUNCTION vgene_inter2(x,ndim,F,nn,n,ntyp)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
 
        real (kind=Rkind) :: vgene_inter2 ! function
@@ -1679,21 +1679,21 @@
        real (kind=Rkind) :: v
 !      ---------------------------------------------------------
 
-!      write(out_unitp,*) 'BEGINING vgene_inter2',ndim,nn,n
-!      write(out_unitp,*) 'F(:)',F
-!      write(out_unitp,*) 'x',x
+!      write(out_unit,*) 'BEGINING vgene_inter2',ndim,nn,n
+!      write(out_unit,*) 'F(:)',F
+!      write(out_unit,*) 'x',x
 
 
        z=ZERO
        DO kl=1,nn
          z = z + F(kl) * v(x,ndim,kl,n,ntyp)
-         !write(out_unitp,*) z,F(kl),ndim,nn,n
+         !write(out_unit,*) z,F(kl),ndim,nn,n
          !flush(6)
        END DO
 
        vgene_inter2 = z
 
-!      write(out_unitp,*) 'END vgene_inter2',x,z,ndim,nn,n
+!      write(out_unit,*) 'END vgene_inter2',x,z,ndim,nn,n
 
        end function vgene_inter2
 !
@@ -1706,7 +1706,7 @@
 !
 !
       SUBROUTINE SPLINE_1D(X,Y,N,Y2)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
 
@@ -1751,7 +1751,7 @@
       end subroutine SPLINE_1D
 
       FUNCTION SPLINT_1D(X,XA,YA,Y2A,N)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
       real(kind=Rkind)  :: SPLINT_1D

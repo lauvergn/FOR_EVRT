@@ -195,15 +195,15 @@ MODULE mod_MPI
     ENDIF
 
     IF(sizeof(integer_MPI)/=MPI_INTEGER_KIND) THEN
-      write(out_unitp,*) 'Please check the Integer type of Compiler and MPI used,'
+      write(out_unit,*) 'Please check the Integer type of Compiler and MPI used,'
       STOP 'Integer type of default Fortran Compiler and MPI not agree.'
     ENDIF
 
-    write(out_unitp,*) 'Initiaize MPI with ', MPI_np, 'cores.'
-    write(out_unitp,*) 'NOTE: MPI in progress. If get memory error, check if           &
+    write(out_unit,*) 'Initiaize MPI with ', MPI_np, 'cores.'
+    write(out_unit,*) 'NOTE: MPI in progress. If get memory error, check if           &
                                       the variables are just allocated on root threads.'
-    write(out_unitp,*)
-    write(out_unitp,*) 'Integer type of default Fortran Compiler:',                    &
+    write(out_unit,*)
+    write(out_unit,*) 'Integer type of default Fortran Compiler:',                    &
                                          sizeof(integer_MPI),', MPI: ',MPI_INTEGER_KIND
     IF(sizeof(integer_MPI)/=MPI_INTEGER_KIND)                                          &
                                  STOP 'Please use same integer type for Fortran and MPI'
@@ -217,9 +217,9 @@ MODULE mod_MPI
     IMPLICIT NONE
 
     IF(MPI_id==0) THEN
-      write(out_unitp,*) 'time used for action: ',                                     &
+      write(out_unit,*) 'time used for action: ',                                     &
              real(time_MPI_action,kind=Rkind)/real(time_rate,kind=Rkind),' from ',MPI_id
-      write(out_unitp,*) 'time used for MPI communication: ',                          &
+      write(out_unit,*) 'time used for MPI communication: ',                          &
                   real(time_comm,kind=Rkind)/real(time_rate,kind=Rkind),' from ', MPI_id
     ENDIF
 
@@ -333,13 +333,13 @@ MODULE mod_MPI
 
         MPI_nodes_num=ii+1
         IF(.NOT. ALL(MPI_nodes_np(0:MPI_nodes_num-1)>=2))                              &
-                                     write(out_unitp,*) 'warning, only one core in node'
+                                     write(out_unit,*) 'warning, only one core in node'
 
-        write(out_unitp,*) 'MPI working on',MPI_nodes_num,'nodes:'
+        write(out_unit,*) 'MPI working on',MPI_nodes_num,'nodes:'
         DO ii=0,MPI_nodes_num-1
-          write(out_unitp,11) MPI_nodes_name(ii),MPI_nodes_np(ii)
+          write(out_unit,11) MPI_nodes_name(ii),MPI_nodes_np(ii)
         ENDDO
-        write(out_unitp,*) ' '
+        write(out_unit,*) ' '
 11      format('   ',a10,' ',i3,' cores')
 
       ENDIF ! MPI_id
@@ -366,7 +366,7 @@ MODULE mod_MPI
     IF(MPI_id==0 .OR. MPI_nodes_p0) THEN
       MPI_sub_id(1)=MPI_id+1
       MPI_sub_id(2)=MPI_id+MPI_nodes_np(MPI_node_id)-1
-      write(out_unitp,*) 'MPI_nodes_id check:',MPI_id,MPI_node_id,MPI_node_p0_id,MPI_sub_id(1),MPI_sub_id(2),MPI_nodes_p0
+      write(out_unit,*) 'MPI_nodes_id check:',MPI_id,MPI_node_id,MPI_node_p0_id,MPI_sub_id(1),MPI_sub_id(2),MPI_nodes_p0
     ENDIF
 
   ENDSUBROUTINE get_nodes_info_MPI

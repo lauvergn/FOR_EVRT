@@ -27,7 +27,7 @@
 !===============================================================================
 !===============================================================================
 FUNCTION Funct_1D(x,i,ntyp,first_i)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
       real(kind=Rkind)  :: Funct_1D
 
@@ -63,7 +63,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
          Funct_1D = poly_Hermite(x,2*i-2*first_i)
 
        CASE default ! ERROR: wrong function !
-         write(out_unitp,*) ' ERROR wrong function, ntyp',ntyp
+         write(out_unit,*) ' ERROR wrong function, ntyp',ntyp
          STOP
        END SELECT
 
@@ -76,7 +76,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !    rq: i=[1,2,3,....]
 !================================================================
       SUBROUTINE d0d1d2d3poly(x,d0,d1,d2,d3,i)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) d0,d1,d2,d3
@@ -126,7 +126,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !    v26 serie de fourier
 !================================================================
       SUBROUTINE d0d1d2d3fourier(x,d0,d1,d2,d3,i)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) d0,d1,d2,d3
@@ -174,7 +174,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !    sin(k*x) with x E [0,pi]
 !================================================================
       SUBROUTINE d0d1d2d3box(x,d0,d1,d2,d3,i)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) d0,d1,d2,d3
@@ -203,7 +203,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !    v26 serie de fourier
 !================================================================
       FUNCTION fourier(x,n1)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
       real(kind=Rkind) :: fourier
 
@@ -225,14 +225,14 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 
        IF (ii == 0) THEN
          fourier = sq2pi
-         !write(out_unitp,*) 'n1,ii: cte',n1,ii
+         !write(out_unit,*) 'n1,ii: cte',n1,ii
        ELSE
          IF (mod(n1,2) == 0) THEN
            fourier = sin(xx) * sqpi
-           !write(out_unitp,*) 'n1,ii: sin',n1,ii
+           !write(out_unit,*) 'n1,ii: sin',n1,ii
          ELSE
            fourier = cos(xx) * sqpi
-           !write(out_unitp,*) 'n1,ii: cos',n1,ii
+           !write(out_unit,*) 'n1,ii: cos',n1,ii
          END IF
        END IF
 
@@ -246,7 +246,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !
 !===================================================
       FUNCTION poly_cheby(x,nn)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
       real(kind=Rkind) :: poly_cheby
 
@@ -261,8 +261,8 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 
 
        IF (n < 0 .OR. abs(x) > ONE) THEN
-         write(out_unitp,*) ' ERROR in  poly_cheby :'
-         write(out_unitp,*) ' n : ',n,' et x = ',x
+         write(out_unit,*) ' ERROR in  poly_cheby :'
+         write(out_unit,*) ' n : ',n,' et x = ',x
          STOP
        END IF
 
@@ -289,7 +289,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !
 !===================================================
       SUBROUTINE d0poly_cheby_grille(x,d0p,nb,nq)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
       integer, intent(in) :: nq,nb
@@ -329,7 +329,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !
 !===================================================
       SUBROUTINE d0poly_chebyWeight_grid(x,d0p,nb,nq)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
       integer, intent(in) :: nq,nb
@@ -372,7 +372,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !
 !===================================================
       FUNCTION poly_legendre(xx,lll,mmm)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
       real(kind=Rkind) :: poly_legendre
 
@@ -392,8 +392,8 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 
 
        IF (m < 0 .OR. l < 0 .OR. abs(x) > ONE) THEN
-         write(out_unitp,*) 'mauvais arguments dans poly_legendre :'
-         write(out_unitp,*) ' m l : ',m,l,' et x = ',x
+         write(out_unit,*) 'mauvais arguments dans poly_legendre :'
+         write(out_unit,*) ' m l : ',m,l,' et x = ',x
          STOP
        END IF
 
@@ -438,13 +438,13 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
          norme2 = norme2 * real(i,kind=Rkind)
        END DO
 
-!      write(out_unitp,*) l,m,norme2
+!      write(out_unit,*) l,m,norme2
        poly_legendre = poly/sqrt(norme2)
 
        RETURN
        end function poly_legendre
        FUNCTION UNpoly_legendre(xx,lll,mmm)
-       USE mod_system
+       USE FOR_EVRT_system_m
        IMPLICIT NONE
        real(kind=Rkind) :: UNpoly_legendre
 
@@ -464,8 +464,8 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 
 
         IF (m < 0 .OR. l < 0 .OR. abs(x) > ONE) THEN
-          write(out_unitp,*) 'mauvais arguments dans UNpoly_legendre :'
-          write(out_unitp,*) ' m l : ',m,l,' et x = ',x
+          write(out_unit,*) 'mauvais arguments dans UNpoly_legendre :'
+          write(out_unit,*) ' m l : ',m,l,' et x = ',x
           STOP
         END IF
 
@@ -520,7 +520,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !
 !===================================================
       FUNCTION d1poly_legendre(x,lll)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
       real(kind=Rkind) :: d1poly_legendre
 
@@ -538,7 +538,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
                    sqrt(real(2*l+2,kind=Rkind)/real(2*l-1,kind=Rkind))* &
                    poly_legendre(x,lll-1,0) )
 
-!      write(out_unitp,*) 'derive :',lll,x,d1poly_legendre,d1
+!      write(out_unit,*) 'derive :',lll,x,d1poly_legendre,d1
 
        END IF
 
@@ -556,7 +556,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !
 !===================================================
       SUBROUTINE d0d1d2poly_legendre(x,lll,d0,d1,d2,num,step)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) x
@@ -589,7 +589,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
            d2 = (-d0 * real(l*(l+1),kind=Rkind) + TWO*x*d1)/(ONE-x*x)
          END IF
        END IF
-!      write(out_unitp,*) 'derive :',lll,x,d0,d1,d2
+!      write(out_unit,*) 'derive :',lll,x,d0,d1,d2
 
        RETURN
        end subroutine d0d1d2poly_legendre
@@ -608,7 +608,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
                                         x,lll,                          &
                                         d0,d1,d2,d3,                    &
                                         nderiv)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) x
@@ -635,7 +635,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
          d3 = (d1 * real(2-l*(l+1),kind=Rkind) + d2 * FOUR*x ) / (ONE-x*x)
 
        END IF
-!      write(out_unitp,*) 'derive :',lll,x,d0,d1,d2,d3
+!      write(out_unit,*) 'derive :',lll,x,d0,d1,d2,d3
 
        RETURN
        end subroutine d0d1d2d3poly_legendre
@@ -656,7 +656,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
                                               c,s,lll,                  &
                                               dc0,dc1,dc2,dc3,          &
                                               nderiv)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) s,c
@@ -670,7 +670,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 
 
        CALL d0d1d2d3poly_legendre(c,lll,d0,d1,d2,d3,nderiv)
-!      write(out_unitp,*) 'derive :',lll,c,d0,d1,d2,d3
+!      write(out_unit,*) 'derive :',lll,c,d0,d1,d2,d3
 
 !      transfo des derivees en theta
 
@@ -679,7 +679,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
        dc2 = -c * d1 +       s*s * d2
        dc3 =  s * d1 + THREE*s*c * d2 - s*s*s * d3
 
-!      write(out_unitp,*) 'derive :',lll,c,dc0,dc1,dc2,dc3
+!      write(out_unit,*) 'derive :',lll,c,dc0,dc1,dc2,dc3
 
        RETURN
        end subroutine d0d1d2d3poly_legendre_theta
@@ -691,7 +691,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !===================================================
       SUBROUTINE d0d1d2poly_legendre_grille(xl,                         &
         d0l,d1l,d2l,nb_legendre,nb_quadra,deriv,num,step)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
       integer nb_legendre,nb_quadra
@@ -705,9 +705,9 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 
       integer i,k
 
-!     write(out_unitp,*) 'd0d1d2poly_legendre_grille : deriv',deriv
-!     write(out_unitp,*) 'd0d1d2poly_legendre_grille : num',num
-!     write(out_unitp,*) 'd0d1d2poly_legendre_grille : step',step
+!     write(out_unit,*) 'd0d1d2poly_legendre_grille : deriv',deriv
+!     write(out_unit,*) 'd0d1d2poly_legendre_grille : num',num
+!     write(out_unit,*) 'd0d1d2poly_legendre_grille : step',step
       DO k=1,nb_quadra
         DO i=1,nb_legendre
           CALL d0d1d2poly_legendre(xl(k),i,                             &
@@ -726,7 +726,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !===================================================
       SUBROUTINE d0d1d2Plm_grid(xl,                                     &
         d0l,d1l,d2l,nb_legendre,nb_quadra,deriv,num,step)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
       integer nb_legendre,nb_quadra
@@ -740,9 +740,9 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 
       integer i,k
 
-!     write(out_unitp,*) 'd0d1d2poly_legendre_grille : deriv',deriv
-!     write(out_unitp,*) 'd0d1d2poly_legendre_grille : num',num
-!     write(out_unitp,*) 'd0d1d2poly_legendre_grille : step',step
+!     write(out_unit,*) 'd0d1d2poly_legendre_grille : deriv',deriv
+!     write(out_unit,*) 'd0d1d2poly_legendre_grille : num',num
+!     write(out_unit,*) 'd0d1d2poly_legendre_grille : step',step
       DO k=1,nb_quadra
         DO i=1,nb_legendre
           CALL d0d1d2poly_legendre(xl(k),i,                             &
@@ -762,7 +762,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !===================================================
       SUBROUTINE d0d1d2Plm_0_grid(xl,                                   &
         d0l,d1l,d2l,nb_legendre,nb_quadra,deriv,num,step)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
       integer nb_legendre,nb_quadra
@@ -776,9 +776,9 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 
       integer i,ii,k
 
-!     write(out_unitp,*) 'd0d1d2poly_legendre_grille : deriv',deriv
-!     write(out_unitp,*) 'd0d1d2poly_legendre_grille : num',num
-!     write(out_unitp,*) 'd0d1d2poly_legendre_grille : step',step
+!     write(out_unit,*) 'd0d1d2poly_legendre_grille : deriv',deriv
+!     write(out_unit,*) 'd0d1d2poly_legendre_grille : num',num
+!     write(out_unit,*) 'd0d1d2poly_legendre_grille : step',step
       DO k=1,nb_quadra
         ii = 1
         DO i=1,nb_legendre
@@ -800,7 +800,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !===================================================
       SUBROUTINE d0d1d2Plm_1_grid(xl,                                   &
         d0l,d1l,d2l,nb_legendre,nb_quadra,deriv,num,step)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
       integer nb_legendre,nb_quadra
@@ -814,9 +814,9 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 
       integer i,ii,k
 
-!     write(out_unitp,*) 'd0d1d2poly_legendre_grille : deriv',deriv
-!     write(out_unitp,*) 'd0d1d2poly_legendre_grille : num',num
-!     write(out_unitp,*) 'd0d1d2poly_legendre_grille : step',step
+!     write(out_unit,*) 'd0d1d2poly_legendre_grille : deriv',deriv
+!     write(out_unit,*) 'd0d1d2poly_legendre_grille : num',num
+!     write(out_unit,*) 'd0d1d2poly_legendre_grille : step',step
       DO k=1,nb_quadra
         ii = 2
         DO i=1,nb_legendre
@@ -836,7 +836,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !
 !===================================================
       FUNCTION poly_Hermite_exp(x,l)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
       real(kind=Rkind) :: poly_Hermite_exp
 
@@ -847,7 +847,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 
       poly_Hermite_exp = poly_Hermite(x,l) * exp(-x*x*HALF)
 
-!      write(out_unitp,*) x,poly_Hermite_exp
+!      write(out_unit,*) x,poly_Hermite_exp
        RETURN
        end function poly_Hermite_exp
 !===================================================
@@ -857,7 +857,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !
 !===================================================
       FUNCTION poly_Hermite(x,l)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
       real(kind=Rkind) :: poly_Hermite
 
@@ -873,8 +873,8 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 
 
        IF ( l .LT. 0 ) THEN
-         write(out_unitp,*) 'mauvais arguments dans poly_hermite :'
-         write(out_unitp,*) ' l < 0 : ',l
+         write(out_unit,*) 'mauvais arguments dans poly_hermite :'
+         write(out_unit,*) ' l < 0 : ',l
          STOP
        END IF
 
@@ -901,7 +901,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
        END IF
 
 
-!      write(out_unitp,*) x,poly_Hermite
+!      write(out_unit,*) x,poly_Hermite
        RETURN
        end function poly_Hermite
 !===================================================
@@ -914,7 +914,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !
 !===================================================
       SUBROUTINE d0d1d2poly_Hermite(x,l,d0,d1,d2,deriv,num,step)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) x,d0,d1,d2
@@ -974,7 +974,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
          d2 = ZERO
        END IF
 
-!      write(out_unitp,*) 'l x d0 d1 d2 hermite :',l,x,d0,d1,d2
+!      write(out_unit,*) 'l x d0 d1 d2 hermite :',l,x,d0,d1,d2
 
 
        RETURN
@@ -989,7 +989,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !
 !===================================================
       SUBROUTINE d0d1d2d3poly_Hermite_exp(x,l,d0,d1,d2,d3,deriv)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) x,d0,d1,d2,d3,pexp
@@ -1038,7 +1038,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
          d2 = ZERO
        END IF
 
-!      write(out_unitp,*) 'l x d0 d1 d2 hermite :',l,x,d0,d1,d2
+!      write(out_unit,*) 'l x d0 d1 d2 hermite :',l,x,d0,d1,d2
 
 
        RETURN
@@ -1051,7 +1051,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !===================================================
       SUBROUTINE d0d1d2poly_Hermite_grille(xh,                          &
         d0h,d1h,d2h,nb_herm,nb_gauss_h,deriv,num,step)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) step
@@ -1071,9 +1071,9 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
            CALL d0d1d2poly_Hermite(xh(k),i,                             &
                      d0h(k,i),d1h(k,i),d2h(k,i),deriv,num,step)
 
-!          write(out_unitp,*) i,k,d0h(k,i)
-!          write(out_unitp,*) i,k,d1h(k,i)
-!          write(out_unitp,*) i,k,d2h(k,i)
+!          write(out_unit,*) i,k,d0h(k,i)
+!          write(out_unit,*) i,k,d1h(k,i)
+!          write(out_unit,*) i,k,d2h(k,i)
          END DO
        END DO
 
@@ -1088,7 +1088,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !
 !===================================================
       SUBROUTINE d0d1d2poly_Hermite_exp(x,l,d0,d1,d2,deriv,num,step)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) x,d0,d1,d2,pexp
@@ -1103,7 +1103,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !----- function -----------------------------------
 
 
-!      write(out_unitp,*) 'num',num
+!      write(out_unit,*) 'num',num
 
        IF (deriv) THEN
 
@@ -1126,13 +1126,13 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
            ELSE
              d1 = sqrt(TWO*real(l,kind=Rkind)) * poly_Hermite(x,l-1)
              d2 = TWO*(x*d1-d0*real(l,kind=Rkind))
-!            write(out_unitp,*) 'l,x,d0,d1,d2',l,x,d0,d1,d2
+!            write(out_unit,*) 'l,x,d0,d1,d2',l,x,d0,d1,d2
            END IF
 
 
          END IF
 
-!      write(out_unitp,*) 'l x d0 d1 d2 hermite :',l,x,d0,d1,d2
+!      write(out_unit,*) 'l x d0 d1 d2 hermite :',l,x,d0,d1,d2
 !        on rajoute la partie exponentielle
 !        pour d0 d1 d2
          pexp = exp(-HALF*x*x)
@@ -1146,7 +1146,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
          d2 = ZERO
        END IF
 
-!      write(out_unitp,*) 'l x d0 d1 d2 hermite :',l,x,d0,d1,d2
+!      write(out_unit,*) 'l x d0 d1 d2 hermite :',l,x,d0,d1,d2
 
 
        RETURN
@@ -1163,7 +1163,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !===================================================
       SUBROUTINE d0d1d2poly_Hermite_exp_grille(xh,                      &
         d0h,d1h,d2h,nb_herm,nb_gauss_h,deriv,num,step)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) step
@@ -1178,16 +1178,16 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 
        integer i,k,id
 
-!      write(out_unitp,*) 'num',num
+!      write(out_unit,*) 'num',num
        DO k=1,nb_gauss_h
          id = 0
          DO i=1,nb_herm
            CALL d0d1d2poly_Hermite_exp(xh(k),id,                        &
                      d0h(k,i),d1h(k,i),d2h(k,i),deriv,num,step)
 
-!          write(out_unitp,*) i,k,d0h(k,i)
-!          write(out_unitp,*) i,k,d1h(k,i)
-!          write(out_unitp,*) i,k,d2h(k,i)
+!          write(out_unit,*) i,k,d0h(k,i)
+!          write(out_unit,*) i,k,d1h(k,i)
+!          write(out_unit,*) i,k,d2h(k,i)
            id = id+1
          END DO
        END DO
@@ -1195,7 +1195,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
        end subroutine d0d1d2poly_Hermite_exp_grille
       SUBROUTINE d0d1d2poly_Hermite_0_exp_grille(xh,                    &
         d0h,d1h,d2h,nb_herm,nb_gauss_h,deriv,num,step)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) step
@@ -1210,16 +1210,16 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 
        integer i,k,id
 
-!      write(out_unitp,*) 'num',num
+!      write(out_unit,*) 'num',num
        DO k=1,nb_gauss_h
          id = 0
          DO i=1,nb_herm
            CALL d0d1d2poly_Hermite_exp(xh(k),id,                        &
                      d0h(k,i),d1h(k,i),d2h(k,i),deriv,num,step)
 
-!          write(out_unitp,*) i,k,d0h(k,i)
-!          write(out_unitp,*) i,k,d1h(k,i)
-!          write(out_unitp,*) i,k,d2h(k,i)
+!          write(out_unit,*) i,k,d0h(k,i)
+!          write(out_unit,*) i,k,d1h(k,i)
+!          write(out_unit,*) i,k,d2h(k,i)
            id = id+2
          END DO
        END DO
@@ -1227,7 +1227,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
        end subroutine d0d1d2poly_Hermite_0_exp_grille
       SUBROUTINE d0d1d2poly_Hermite_1_exp_grille(xh,                    &
         d0h,d1h,d2h,nb_herm,nb_gauss_h,deriv,num,step)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) step
@@ -1242,16 +1242,16 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 
        integer i,k,id
 
-!      write(out_unitp,*) 'num',num
+!      write(out_unit,*) 'num',num
        DO k=1,nb_gauss_h
          id = 1
          DO i=1,nb_herm
            CALL d0d1d2poly_Hermite_exp(xh(k),id,                        &
                      d0h(k,i),d1h(k,i),d2h(k,i),deriv,num,step)
 
-!          write(out_unitp,*) i,k,d0h(k,i)
-!          write(out_unitp,*) i,k,d1h(k,i)
-!          write(out_unitp,*) i,k,d2h(k,i)
+!          write(out_unit,*) i,k,d0h(k,i)
+!          write(out_unit,*) i,k,d1h(k,i)
+!          write(out_unit,*) i,k,d2h(k,i)
            id = id+2
          END DO
        END DO
@@ -1268,7 +1268,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !===================================================
       SUBROUTINE d0d1d2poly_Hermite_exp_noexp(                          &
                                             x,l,d0,d1,d2,deriv,num,step)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) x,d0,d1,d2,pexp
@@ -1283,7 +1283,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !----- function -----------------------------------
 
 
-!      write(out_unitp,*) 'num',num
+!      write(out_unit,*) 'num',num
 
        IF (deriv) THEN
 
@@ -1306,13 +1306,13 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
            ELSE
              d1 = sqrt(TWO*real(l,kind=Rkind)) * poly_Hermite(x,l-1)
              d2 = TWO*(x*d1-d0*real(l,kind=Rkind))
-!            write(out_unitp,*) 'l,x,d0,d1,d2',l,x,d0,d1,d2
+!            write(out_unit,*) 'l,x,d0,d1,d2',l,x,d0,d1,d2
            END IF
 
 
          END IF
 
-!      write(out_unitp,*) 'l x d0 d1 d2 hermite :',l,x,d0,d1,d2
+!      write(out_unit,*) 'l x d0 d1 d2 hermite :',l,x,d0,d1,d2
 !        On tient compte de exp() pour les derivees mais il n'est pas dans les fonctions
 !        pour d0 d1 d2
          d2 = (d2-TWO*x*d1+(x*x-ONE)*d0)
@@ -1325,7 +1325,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
          d2 = ZERO
        END IF
 
-!      write(out_unitp,*) 'l x d0 d1 d2 hermite :',l,x,d0,d1,d2
+!      write(out_unit,*) 'l x d0 d1 d2 hermite :',l,x,d0,d1,d2
 
 
        RETURN
@@ -1338,7 +1338,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 !===================================================
       SUBROUTINE d0d1d2poly_Hermite_exp_noexp_G(xh,                &
         d0h,d1h,d2h,nb_herm,nb_gauss_h,deriv,num,step)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) step
@@ -1353,16 +1353,16 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 
        integer i,k,id
 
-!      write(out_unitp,*) 'num',num
+!      write(out_unit,*) 'num',num
        DO k=1,nb_gauss_h
          id = 0
          DO i=1,nb_herm
            CALL d0d1d2poly_Hermite_exp_noexp(xh(k),id,                  &
                      d0h(k,i),d1h(k,i),d2h(k,i),deriv,num,step)
 
-!          write(out_unitp,*) i,k,d0h(k,i)
-!          write(out_unitp,*) i,k,d1h(k,i)
-!          write(out_unitp,*) i,k,d2h(k,i)
+!          write(out_unit,*) i,k,d0h(k,i)
+!          write(out_unit,*) i,k,d1h(k,i)
+!          write(out_unit,*) i,k,d2h(k,i)
            id = id+1
          END DO
        END DO
@@ -1378,7 +1378,7 @@ FUNCTION Funct_1D(x,i,ntyp,first_i)
 ! Normalization:
 !  Int[0,+inf] L(x,n,a)L(x,m,a).Exp(-x).x^a.dx = delta(n,m)gamma(n+1+a)/n!
 FUNCTION poly_laguerre(x,n,a)
-  USE mod_system
+  USE FOR_EVRT_system_m
   IMPLICIT NONE
   real(kind=Rkind) :: poly_laguerre
 
@@ -1412,7 +1412,7 @@ FUNCTION poly_laguerre(x,n,a)
 END FUNCTION poly_laguerre
 
 SUBROUTINE d0d1d2poly_laguerre(x,d0l,d1l,d2l,n,a)
-  USE mod_system
+  USE FOR_EVRT_system_m
   IMPLICIT NONE
   real(kind=Rkind) :: d0l,d1l,d2l
 
@@ -1464,7 +1464,7 @@ SUBROUTINE d0d1d2poly_laguerre(x,d0l,d1l,d2l,n,a)
 
 END SUBROUTINE d0d1d2poly_laguerre
 SUBROUTINE d0d1d2poly_laguerre_weight(x,d0l,d1l,d2l,n,a)
-  USE mod_system
+  USE FOR_EVRT_system_m
   IMPLICIT NONE
        real(kind=Rkind), intent(inout) :: d0l,d1l,d2l
        integer,          intent(in)    :: n,a
@@ -1502,7 +1502,7 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
 !=============================================================
       SUBROUTINE d0d1d2poly_fourier_grille(xf,d0f,d1f,d2f,              &
                               nb_fourier,nb_quadra,deriv,num,step)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
 !---------------------------------------------------------------------
@@ -1528,9 +1528,9 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
       sqpi = ONE/sqrt(pi)
       sq2pi = ONE/sqrt(pi+pi)
 
-!     write(out_unitp,*) 'd0d1d2poly_fourier_grille : deriv',deriv
-!     write(out_unitp,*) 'd0d1d2poly_fourier_grille : num',num
-!     write(out_unitp,*) 'd0d1d2poly_fourier_grille : step',step
+!     write(out_unit,*) 'd0d1d2poly_fourier_grille : deriv',deriv
+!     write(out_unit,*) 'd0d1d2poly_fourier_grille : num',num
+!     write(out_unit,*) 'd0d1d2poly_fourier_grille : step',step
 
 !     pour les 1/2pi   ic=1
       ic=1
@@ -1545,7 +1545,7 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
       DO ii=1,nb_fourier/2
         ic = ic + 1
         is = is + 1
-!       write(out_unitp,*) 'ii,is,ic',ii,is,ic
+!       write(out_unit,*) 'ii,is,ic',ii,is,ic
         DO k=1,nb_quadra
 !         xiik = mod(xf(k)*ii,pi2)
           xiik = xf(k)*real(ii,kind=Rkind)
@@ -1571,7 +1571,7 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
 !
 !=============================================================
       SUBROUTINE bessel (x, nmax, bj)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
 ! Computes Bessel functions Jn(x), from order 0 to order nmax.
@@ -1669,7 +1669,7 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
 !-----------------------------------------------------------------------
 
       FUNCTION msta1 (x, mp)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
       integer :: msta1
 
@@ -1709,7 +1709,7 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
 !-----------------------------------------------------------------------
 
       FUNCTION msta2 (x, n, mp)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
       INTEGER :: msta2
 
@@ -1811,7 +1811,7 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
 !-----------------------------------------------------------------------
 !
       SUBROUTINE mmbsjn (arg,n,b,ier)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 !                                  specifications for arguments
       integer            n,ier
@@ -2009,7 +2009,7 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
 !================================================================
 
       SUBROUTINE d0Ylm(d0,x,i,ndim)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) d0,x(2)
@@ -2023,8 +2023,8 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
 !      ---------------------------------------------------------------
 
        IF (ndim .NE. 2) THEN
-         write(out_unitp,*) ' ERROR in d0Ylm'
-         write(out_unitp,*) ' ndim MUST set to 2 (ndim=',ndim,')'
+         write(out_unit,*) ' ERROR in d0Ylm'
+         write(out_unit,*) ' ndim MUST set to 2 (ndim=',ndim,')'
          STOP
        END IF
 
@@ -2039,7 +2039,7 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
 
 
 
-       !write(out_unitp,*) 'ylm',i,lll,mmm
+       !write(out_unit,*) 'ylm',i,lll,mmm
 
        d0 = poly_legendre(cos(th),lll,m)*fourier(phi,mmm)
 
@@ -2050,7 +2050,7 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
 !================================================================
 
       SUBROUTINE d0d1d2Ylm(d0,d1,d2,x,i,num,step)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) d0,d1(2),d2(2,2),x(2)
@@ -2069,7 +2069,7 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
        real(kind=Rkind) poly_legendre
 !      ---------------------------------------------------------------
 
-!      write(out_unitp,*) i,num,step,x,d0,d1,d2
+!      write(out_unit,*) i,num,step,x,d0,d1,d2
 
        th=x(1)
        phi=x(2)
@@ -2106,7 +2106,7 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
 
 
 
-!      write(out_unitp,*) i,l,m,d0plm,d1plm,d2plm
+!      write(out_unit,*) i,l,m,d0plm,d1plm,d2plm
 
 
        d0      = d0plm * d0fm
@@ -2119,7 +2119,7 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
 
      END SUBROUTINE d0d1d2Ylm
      SUBROUTINE d0d1d2d3Ylm(d0,d1,d2,d3,x,i)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) d0,d1(2),d2(2,2),d3(2,2,2),x(2)
@@ -2151,7 +2151,7 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
        CALL d0d1d2d3fourier(phi,d0fm,d1fm,d2fm,d3fm,mmm)
        CALL d0d1d2d3Plm(d0plm,d1plm,d2plm,d3plm,th,l,m)
 
-!      write(out_unitp,*) i,l,m,d0plm,d1plm,d2plm,d3plm
+!      write(out_unit,*) i,l,m,d0plm,d1plm,d2plm,d3plm
 
 
        d0        = d0plm * d0fm
@@ -2184,7 +2184,7 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
 !    mmm dans l'ordre de la serie de fourier v26
 !===================================================
       FUNCTION Ylm(th,phi,lll,mmm)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
       real(kind=Rkind) :: Ylm
 
@@ -2205,9 +2205,9 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
        m = mmm/2
 
        IF ( m > l .OR. l < 0 .OR. th >= pi .OR. th <= ZERO) THEN
-         write(out_unitp,*) 'mauvais arguments dans Ylm :'
-         write(out_unitp,*) ' m l : ',m,l,' et th = ',th
-         write(out_unitp,*) ' mmm lll : ',mmm,lll
+         write(out_unit,*) 'mauvais arguments dans Ylm :'
+         write(out_unit,*) ' m l : ',m,l,' et th = ',th
+         write(out_unit,*) ' mmm lll : ',mmm,lll
          STOP
        END IF
 
@@ -2218,7 +2218,7 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
        end function Ylm
 
       SUBROUTINE d0d1d2Plm(d0plm,d1plm,d2plm,th,l,m)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) :: th,d0plm,d1plm,d2plm
@@ -2248,11 +2248,11 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
                  real(l*l+l,kind=Rkind))*d0plm - cth/sth*d1plm
 
 
-!      write(out_unitp,*) lll,m,d0plm,d1plm,d2plm
+!      write(out_unit,*) lll,m,d0plm,d1plm,d2plm
 
       END SUBROUTINE d0d1d2Plm
       SUBROUTINE d0d1d2d3Plm(d0plm,d1plm,d2plm,d3plm,th,l,m)
-      USE mod_system
+      USE FOR_EVRT_system_m
       IMPLICIT NONE
 
        real(kind=Rkind) :: th,d0plm,d1plm,d2plm,d3plm
@@ -2291,6 +2291,6 @@ END SUBROUTINE d0d1d2poly_laguerre_weight
                (Rm2/sth**2 - Rllp1) * d1plm - &
                (-ONE/sth**2) * d1plm - cth/sth * d2plm
 
-!      write(out_unitp,*) lll,m,d0plm,d1plm,d2plm
+!      write(out_unit,*) lll,m,d0plm,d1plm,d2plm
 
        END SUBROUTINE d0d1d2d3Plm

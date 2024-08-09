@@ -1,5 +1,5 @@
 MODULE wigner_m
-  USE mod_system
+  USE FOR_EVRT_system_m
   Implicit none
 
   PRIVATE
