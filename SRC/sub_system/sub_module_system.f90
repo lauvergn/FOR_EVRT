@@ -69,4 +69,6 @@ MODULE FOR_EVRT_system_m
     character (len=Name_len) :: Optimization_param  = 'geometry'
   END TYPE param_FOR_optimization
 
+  TYPE (param_FOR_optimization), save :: para_FOR_optimization
+
 END MODULE FOR_EVRT_system_m
