@@ -31,36 +31,6 @@ MODULE FOR_EVRT_system_m
   USE mod_MPI
   IMPLICIT NONE
 
-  logical :: openmp = .FALSE.
-  logical :: openmpi= .FALSE.
- 
-  integer :: MatOp_omp,MatOp_maxth,MatOp_maxth_init
-  integer :: OpPsi_omp,OpPsi_maxth,OpPsi_maxth_init
-  integer :: BasisTOGrid_omp,BasisTOGrid_maxth,BasisTOGrid_maxth_init
-  integer :: Grid_omp,Grid_maxth,Grid_maxth_init
-  integer :: SG4_omp,SG4_maxth,SG4_maxth_init
-  integer :: CRP_omp,CRP_maxth,CRP_maxth_init
-
-  logical :: Tune_SG4_omp  = .FALSE.
-  logical :: Tune_Grid_omp = .FALSE.
-
-  integer (kind=ILkind) :: nb_mult_BTOG  = 0
-  integer (kind=ILkind) :: nb_mult_GTOB  = 0
-  integer (kind=ILkind) :: nb_mult_OpPsi = 0
-
-  integer, parameter :: max_HADA = 5000
-  integer, parameter :: max_nb_G_FOR_print = 2000
-  !integer, parameter :: max_nb_G_FOR_print = 20000
-
-  integer :: SGtype               = -1
-  integer :: FilePsiVersion       = 0
-  logical :: NewBasisEl           = .FALSE.
-
-  character (len=:), allocatable :: Current_Path
-
-
-  character (len=Name_longlen) :: EneIO_format = "f20.5"
-
   TYPE param_FOR_optimization
     integer                        :: nb_OptParam    = 0
     integer                        :: i_OptParam     = 0

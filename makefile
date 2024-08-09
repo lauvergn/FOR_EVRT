@@ -54,9 +54,6 @@ OS :=$(shell uname)
 
 # about EVRT, path, versions ...:
 LOC_path:= $(shell pwd)
-#TNUM_ver:=$(shell awk '/Tnum/ {print $$3}' $(LOC_path)/version-EVR-T)
-#TANA_ver:=$(shell awk '/Tana/ {print $$3}' $(LOC_path)/version-EVR-T)
-#EVR_ver:=$(shell awk '/EVR/ {print $$3}' $(LOC_path)/version-EVR-T)
 
 # Extension for the object directory and the library
 ifeq ($(FFC),mpifort)
@@ -75,19 +72,7 @@ MOD_DIR=$(OBJ_DIR)
 #
 # library name
 LIBA=libFOR_EVRT$(extlibwi_obj).a
-#=================================================================================
-# cpp preprocessing
-CPPSHELL = -D__COMPILE_DATE="\"$(shell date +"%a %e %b %Y - %H:%M:%S")\"" \
-           -D__COMPILE_HOST="\"$(shell hostname -s)\"" \
-           -D__COMPILER="'$(FFC)'" \
-           -D__COMPILER_VER="'$(FC_VER)'" \
-           -D__COMPILER_OPT="'$(FFLAGS0)'" \
-           -D__EVRTPATH="'$(LOC_path)'"
-#            \
-           -D__EVR_VER="'$(EVR_ver)'" \
-           -D__TNUM_VER="'$(TNUM_ver)'" \
-           -D__TANA_VER="'$(TANA_ver)'"
-
+#
 #===============================================================================
 #
 #===============================================================================
@@ -135,14 +120,14 @@ ifeq ($(FFC),gfortran)
   # integer kind management
   ifeq ($(INT),8)
     FFLAGS   += -fdefault-integer-8
-    FFLAGS0   += -fdefault-integer-8
+    FFLAGS0  += -fdefault-integer-8
     CPPSHELL += -Dint8=1
   endif
 
   # omp management
   ifeq ($(OOMP),1)
     FFLAGS   += -fopenmp
-    FFLAGS0   += -fopenmp
+    FFLAGS0  += -fopenmp
     CPPSHELL += -Drun_openMP=1
   endif
 
@@ -308,7 +293,7 @@ $(info ************************************************************************)
 #==========================================
 VPATH = SRC/sub_system SRC/sub_module SRC/sub_communf90/sub_math TESTS
 
-Primlib_SRCFILES  = sub_module_MPI.f90  sub_module_system.f90 sub_module_MPI_aux.f90 sub_module_cart.f90
+Primlib_SRCFILES  = sub_module_MPI.f90  FOR_EVRT_system_m.f90 sub_module_MPI_aux.f90 sub_module_cart.f90
 
 math_SRCFILES = sub_integration.f90 sub_polyortho.f90 sub_function.f90 sub_fft.f90
 
@@ -419,14 +404,14 @@ clean_extlib:
 #add dependence for parallelization
 $(OBJ): $(QDLIBA) $(ADLIBA)  $(EVRTdnSVMLIBA) $(nDindexLIBA)
 
-$(OBJ_DIR)/sub_module_system.o:       $(OBJ_DIR)/sub_module_MPI.o
-$(OBJ_DIR)/sub_module_MPI_aux.o:      $(OBJ_DIR)/sub_module_MPI.o $(OBJ_DIR)/sub_module_system.o
+$(OBJ_DIR)/FOR_EVRT_system_m.o:       $(OBJ_DIR)/sub_module_MPI.o
+$(OBJ_DIR)/sub_module_MPI_aux.o:      $(OBJ_DIR)/sub_module_MPI.o $(OBJ_DIR)/FOR_EVRT_system_m.o
 
-$(OBJ_DIR)/sub_integration.o:         $(OBJ_DIR)/sub_module_system.o
-$(OBJ_DIR)/sub_polyortho.o:           $(OBJ_DIR)/sub_module_system.o
-$(OBJ_DIR)/sub_function.o:            $(OBJ_DIR)/sub_module_system.o
-$(OBJ_DIR)/sub_fft.o:                 $(OBJ_DIR)/sub_module_system.o
+$(OBJ_DIR)/sub_integration.o:         $(OBJ_DIR)/FOR_EVRT_system_m.o
+$(OBJ_DIR)/sub_polyortho.o:           $(OBJ_DIR)/FOR_EVRT_system_m.o
+$(OBJ_DIR)/sub_function.o:            $(OBJ_DIR)/FOR_EVRT_system_m.o
+$(OBJ_DIR)/sub_fft.o:                 $(OBJ_DIR)/FOR_EVRT_system_m.o
 
-$(OBJ_DIR)/sub_module_cart.o:         $(OBJ_DIR)/sub_module_system.o
+$(OBJ_DIR)/sub_module_cart.o:         $(OBJ_DIR)/FOR_EVRT_system_m.o
 
-$(OBJ_DIR)/sub_module_nDfit.o:        $(OBJ_DIR)/sub_module_system.o
+$(OBJ_DIR)/sub_module_nDfit.o:        $(OBJ_DIR)/FOR_EVRT_system_m.o
