@@ -53,7 +53,7 @@ endif
 OS :=$(shell uname)
 
 # about EVRT, path, versions ...:
-LOC_path:= $(shell pwd)
+MAIN_path:= $(shell pwd)
 
 # Extension for the object directory and the library
 ifeq ($(FFC),mpifort)
@@ -78,7 +78,7 @@ LIBA=libFOR_EVRT$(extlibwi_obj).a
 #===============================================================================
 # external lib (QDUtil, AD_dnSVM ...)
 ifeq ($(ExtLibDIR),)
-  ExtLibDIR := $(LOC_path)/Ext_Lib
+  ExtLibDIR := $(MAIN_path)/Ext_Lib
 endif
 
 nDindex_DIR    = $(ExtLibDIR)/nDindex
@@ -98,180 +98,17 @@ QDMOD_DIR = $(QD_DIR)/OBJ/obj$(extlib_obj)
 QDLIBA    = $(QD_DIR)/libQD$(extlib_obj).a
 
 EXTLib     = $(nDindexLIBA) $(EVRTdnSVMLIBA) $(ADLIBA)  $(QDLIBA)
-FLIB0      = libnDindex$(extlib_obj).a libEVRT_dnSVM$(extlib_obj).a libAD_dnSVM$(extlib_obj).a libQD$(extlib_obj).a
-
+EXTMod     = -I$(nDindexMOD_DIR) -I$(EVRTdnSVMMOD_DIR) -I$(ADMOD_DIR) -I$(QDMOD_DIR)
 #===============================================================================
 #
-#===============================================================================
-# gfortran (osx and linux)
-#ifeq ($(F90),gfortran)
-#===============================================================================
-ifeq ($(FFC),gfortran)
-
-  # opt management
-  ifeq ($(OOPT),1)
-    FFLAGS = -O5 -g -fbacktrace -funroll-loops -ftree-vectorize -falign-loops=16
-    FFLAGS0 = -O5 -g
-  else
-    FFLAGS = -Og -g -fbacktrace -fcheck=all -fwhole-file -fcheck=pointer -Wuninitialized -finit-real=nan -finit-integer=nan
-    FFLAGS0 = -Og -g
-  endif
-
-  # integer kind management
-  ifeq ($(INT),8)
-    FFLAGS   += -fdefault-integer-8
-    FFLAGS0  += -fdefault-integer-8
-    CPPSHELL += -Dint8=1
-  endif
-
-  # omp management
-  ifeq ($(OOMP),1)
-    FFLAGS   += -fopenmp
-    FFLAGS0  += -fopenmp
-    CPPSHELL += -Drun_openMP=1
-  endif
-
-
-  # where to store the .mod files
-  FFLAGS +=-J$(MOD_DIR)
-
-  # where to look the .mod files
-  FFLAGS +=  -I$(ADMOD_DIR) -I$(QDMOD_DIR) -I$(EVRTdnSVMMOD_DIR) -I$(nDindexMOD_DIR)
-
-  # integer kind management
-  FFLAGS += -cpp $(CPPSHELL)
-
-
-  FLIB   = $(EXTLib)
-  # OS management
-  ifeq ($(LLAPACK),1)
-    ifeq ($(OS),Darwin)    # OSX
-      # OSX libs (included lapack+blas)
-      FLIB  += -framework Accelerate
-      FLIB0 += -framework Accelerate
-    else                   # Linux
-      # linux libs
-      FLIB  += -llapack -lblas
-      FLIB0 += -llapack -lblas
-    endif
-  endif
-
-  FC_VER = $(shell $(FFC) --version | head -1 )
-
+#=================================================================================
+# To deal with external compilers.mk file
+CompilersDIR = $(MAIN_path)
+ifeq ($(CompilersDIR),)
+  include compilers.mk
+else
+  include $(CompilersDIR)/compilers.mk
 endif
-#=================================================================================
-#=================================================================================
-#=================================================================================
-# ifort compillation v17 v18 with mkl
-#=================================================================================
-ifeq ($(FFC),$(filter $(FFC),ifort ifx))
-
-  # opt management
-  ifeq ($(OOPT),1)
-      FFLAGS =  -O  -g -traceback -heap-arrays
-  else
-      FFLAGS = -O0 -check all -g -traceback
-  endif
-
-  # integer kind management
-  ifeq ($(INT),8)
-    FFLAGS   += -i8
-    CPPSHELL += -Dint8=1
-  endif
-
-  # omp management
-  ifeq ($(OOMP),1)
-    ifeq ($(FFC),ifort)
-      FFLAGS += -qopenmp -parallel
-    else # ifx
-      FFLAGS += -qopenmp
-    endif
-  endif
-  FFLAGS0 := $(FFLAGS)
-
-  # where to store the modules
-  FFLAGS +=-module $(MOD_DIR)
-
-  # where to look the .mod files
-  FFLAGS += -I$(QDMOD_DIR) -I$(ADMOD_DIR) -I$(EVRTdnSVMMOD_DIR) -I$(nDindexMOD_DIR)
-
-  # integer kind management
-  FFLAGS += -cpp $(CPPSHELL)
-
-
-  FLIB    = $(EXTLib)
-  ifeq ($(LLAPACK),1)
-    ifeq ($(FFC),ifort)
-      FLIB += -mkl -lpthread
-    else # ifx
-      FLIB += -qmkl -lpthread
-    endif
-  else
-    FLIB += -lpthread
-  endif
-
-  FC_VER = $(shell $(FFC) --version | head -1 )
-
-endif
-#===============================================================================
-# nag compillation (nagfor)
-#===============================================================================
-ifeq ($(FFC),nagfor)
-
-  # opt management
-  ifeq ($(OOPT),1)
-      FFLAGS = -O4 -o -compatible -kind=byte -Ounroll=4 -s
-  else
-    ifeq ($(OOMP),0)
-      ifeq ($(LLAPACK),0)
-          FFLAGS = -O0 -g -gline -kind=byte -C -C=alias -C=intovf -C=undefined
-      else
-          FFLAGS = -O0 -g -gline -kind=byte -C -C=alias -C=intovf
-      endif
-    else
-          FFLAGS = -O0 -g        -kind=byte -C -C=alias -C=intovf
-    endif
-  endif
-
-  # integer kind management
-  ifeq ($(INT),8)
-    FFLAGS += -i8
-  endif
-
- # where to store the .mod files
-  FFLAGS +=-mdir $(MOD_DIR)
-
-  # omp management
-  ifeq ($(OOMP),1)
-    FFLAGS += -openmp
-  endif
-
-  # lapack management with cpreprocessing
-  FFLAGS += -fpp -D__LAPACK="$(LLAPACK)"
-
-  # where to look .mod files
-  FFLAGS += -I$(QDMOD_DIR) -I$(ADMOD_DIR) -I$(EVRTdnSVMMOD_DIR) -I$(nDindexMOD_DIR)
-
-  FLIB    = $(QDLIBA)
-
-  # lapact management (default with openmp), with cpreprocessing
-  ifeq ($(LLAPACK),1)
-    ifeq ($(OS),Darwin)    # OSX
-      # OSX libs (included lapack+blas)
-      FLIB += -framework Accelerate
-    else                   # Linux
-      # linux libs
-      FLIB += -llapack -lblas
-    endif
-  endif
-
-  FC_VER = $(shell $(FFC) -V 3>&1 1>&2 2>&3 | head -1 )
-
-endif
-#=================================================================================
-#=================================================================================
-#=================================================================================
-#=================================================================================
 #===============================================================================
 #===============================================================================
 $(info ************************************************************************)
@@ -284,10 +121,6 @@ $(info ***********COMPILED with:    $(MPICORE))
 endif
 $(info ***********OpenMP:           $(OOMP))
 $(info ***********Lapack:           $(LLAPACK))
-$(info ***********FFLAGS0:          $(FFLAGS0))
-#$(info ***********FFLAGS:           $(FFLAGS))
-#$(info ***********FLIB:             $(FLIB))
-$(info ***********FLIB0:            $(FLIB0))
 $(info ************************************************************************)
 $(info ************************************************************************)
 #==========================================
@@ -317,7 +150,7 @@ ut: Test_FOR_EVRT.exe
 	@echo "---------------------------------------"
 #
 Test_FOR_EVRT.exe: $(OBJ_DIR)/Test_FOR_EVRT.o $(LIBA) $(EXTLib)
-	$(FFC) $(FFLAGS) -o Test_FOR_EVRT.exe $(OBJ_DIR)/Test_FOR_EVRT.o $(LIBA) $(FLIB)
+	$(FFC) $(FFLAGS) -o Test_FOR_EVRT.exe $(OBJ_DIR)/Test_FOR_EVRT.o $(LIBA) $(EXTLib) $(FLIB)
 	@echo "  done Library: Test_FOR_EVRT.exe"
 #
 $(OBJ_DIR)/Test_FOR_EVRT.o: $(LIBA) $(EXTLib)
@@ -371,28 +204,28 @@ $(nDindexLIBA):
 	@test -d $(ExtLibDIR)   || (echo $(ExtLibDIR) "does not exist" ; exit 1)
 	@test -d $(nDindex_DIR) || (cd $(ExtLibDIR) ; ./get_nDindex.sh  $(EXTLIB_TYPE))
 	@test -d $(nDindex_DIR) || (echo $(nDindex_DIR) "does not exist" ; exit 1)
-	cd $(nDindex_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) INT=$(INT) ExtLibDIR=$(ExtLibDIR)
+	cd $(nDindex_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) INT=$(INT) ExtLibDIR=$(ExtLibDIR) CompilersDIR=$(CompilersDIR)
 	@echo "  done " $(nDindex_DIR) " in "$(BaseName)
 #
 $(EVRTdnSVMLIBA):
 	@test -d $(ExtLibDIR)     || (echo $(ExtLibDIR) "does not exist" ; exit 1)
 	@test -d $(EVRTdnSVM_DIR) || (cd $(ExtLibDIR) ; ./get_EVRT_dnSVM.sh  $(EXTLIB_TYPE))
 	@test -d $(EVRTdnSVM_DIR) || (echo $(EVRTdnSVM_DIR) "does not exist" ; exit 1)
-	cd $(EVRTdnSVM_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) INT=$(INT) ExtLibDIR=$(ExtLibDIR)
+	cd $(EVRTdnSVM_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) INT=$(INT) ExtLibDIR=$(ExtLibDIR) CompilersDIR=$(CompilersDIR)
 	@echo "  done " $(EVRTdnSVM_DIR) " in "$(BaseName)
 #
 $(ADLIBA):
 	@test -d $(ExtLibDIR) || (echo $(ExtLibDIR) "does not exist" ; exit 1)
 	@test -d $(AD_DIR) || (cd $(ExtLibDIR) ; ./get_AD_dnSVM.sh  $(EXTLIB_TYPE))
 	@test -d $(AD_DIR) || (echo $(AD_DIR) "does not exist" ; exit 1)
-	cd $(AD_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) INT=$(INT) ExtLibDIR=$(ExtLibDIR)
+	cd $(AD_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) INT=$(INT) ExtLibDIR=$(ExtLibDIR) CompilersDIR=$(CompilersDIR)
 	@echo "  done " $(AD_DIR) " in "$(BaseName)
 #
 $(QDLIBA):
 	@test -d $(ExtLibDIR) || (echo $(ExtLibDIR) "does not exist" ; exit 1)
 	@test -d $(QD_DIR) || (cd $(ExtLibDIR) ; ./get_QDUtilLib.sh $(EXTLIB_TYPE))
 	@test -d $(QD_DIR) || (echo $(QD_DIR) "does not exist" ; exit 1)
-	cd $(QD_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) INT=$(INT) ExtLibDIR=$(ExtLibDIR)
+	cd $(QD_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) INT=$(INT) ExtLibDIR=$(ExtLibDIR) CompilersDIR=$(CompilersDIR)
 	@echo "  done " $(QDLIBA) " in "$(BaseName)
 ##
 .PHONY: clean_extlib
