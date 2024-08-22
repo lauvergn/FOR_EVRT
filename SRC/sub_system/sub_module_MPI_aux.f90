@@ -1247,8 +1247,8 @@ MODULE mod_MPI_aux
     SUBROUTINE MPI_Reduce_sum_Bcast_array_int(array,length,MS)
       IMPLICIT NONE
 
-      Integer,                     intent(inout) :: array(length)
       Integer,                        intent(in) :: length 
+      Integer,                     intent(inout) :: array(length)
       Integer,optional,               intent(in) :: MS
       Integer                                    :: array_temp(length)
 
@@ -1274,8 +1274,8 @@ MODULE mod_MPI_aux
     SUBROUTINE MPI_Reduce_sum_Bcast_array_real(array,length,MS)
       IMPLICIT NONE
 
-      Real(kind=Rkind),            intent(inout) :: array(length)
       Integer,                        intent(in) :: length 
+      Real(kind=Rkind),            intent(inout) :: array(length)
       Integer,optional,               intent(in) :: MS
       Real(kind=Rkind)                           :: array_temp(length)
 
