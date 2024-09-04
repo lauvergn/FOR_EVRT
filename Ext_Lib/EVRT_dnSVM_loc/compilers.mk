@@ -96,7 +96,7 @@ endif
 #=================================================================================
 ifeq ($(FFC),$(filter $(FFC),ifort ifx))
 
-  # opt management + add/remove some flag to ifort/ifx (mainly to avoid bugs with ifx)
+ # opt management + add/remove some flag to ifort/ifx (mainly to avoid bugs with ifx)
   ifeq ($(OOPT),1)
     FFLAGS = -O  -g -traceback
     CFLAGS = -O  -g -traceback

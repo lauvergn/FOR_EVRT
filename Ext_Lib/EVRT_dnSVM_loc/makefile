@@ -52,8 +52,6 @@ endif
 # Operating system, OS? automatic using uname:
 OS :=$(shell uname)
 
-# about EVRT, path, versions ...:
-MAIN_path:= $(shell pwd)
 
 # Extension for the object directory and the library
 ext_obj=_$(FFC)_opt$(OOPT)_omp$(OOMP)_lapack$(LLAPACK)_int$(INT)
@@ -64,31 +62,22 @@ else
 endif
 
 
-
 OBJ_DIR = obj/obj$(extlibwi_obj)
 $(info ***********OBJ_DIR:            $(OBJ_DIR))
 $(shell [ -d $(OBJ_DIR) ] || mkdir -p $(OBJ_DIR))
 MOD_DIR=$(OBJ_DIR)
 #
 # library name
-LIBA=libFOR_EVRT$(extlibwi_obj).a
-#
-#===============================================================================
+LIBA=libEVRT_dnSVM$(extlibwi_obj).a
+#=================================================================================
 #
 #===============================================================================
 # external lib (QDUtil, AD_dnSVM ...)
+MAIN_path:= $(shell pwd)
 ifeq ($(ExtLibDIR),)
   ExtLibDIR := $(MAIN_path)/Ext_Lib
 endif
 $(shell [ -d $(ExtLibDIR) ] || (echo $(ExtLibDIR) "does not exist" ; exit 1))
-
-nDindex_DIR    = $(ExtLibDIR)/nDindex
-nDindexMOD_DIR = $(nDindex_DIR)/obj/obj$(ext_obj)
-nDindexLIBA    = $(nDindex_DIR)/libnDindex$(ext_obj).a
-
-EVRTdnSVM_DIR    = $(ExtLibDIR)/EVRT_dnSVM
-EVRTdnSVMMOD_DIR = $(EVRTdnSVM_DIR)/obj/obj$(ext_obj)
-EVRTdnSVMLIBA    = $(EVRTdnSVM_DIR)/libEVRT_dnSVM$(ext_obj).a
 
 AD_DIR    = $(ExtLibDIR)/AD_dnSVM
 ADMOD_DIR = $(AD_DIR)/OBJ/obj$(ext_obj)
@@ -98,11 +87,9 @@ QD_DIR    = $(ExtLibDIR)/QDUtilLib
 QDMOD_DIR = $(QD_DIR)/OBJ/obj$(ext_obj)
 QDLIBA    = $(QD_DIR)/libQD$(ext_obj).a
 
-EXTLib     = $(nDindexLIBA) $(EVRTdnSVMLIBA) $(ADLIBA)  $(QDLIBA)
-EXTMod     = -I$(nDindexMOD_DIR) -I$(EVRTdnSVMMOD_DIR) -I$(ADMOD_DIR) -I$(QDMOD_DIR)
+EXTLib     = $(ADLIBA)  $(QDLIBA)
+EXTMod     = -I$(QDMOD_DIR) -I$(ADMOD_DIR)
 #===============================================================================
-#
-#=================================================================================
 # To deal with external compilers.mk file
 CompilersDIR = $(MAIN_path)
 ifeq ($(CompilersDIR),)
@@ -122,19 +109,22 @@ $(info ***********COMPILED with:    $(MPICORE))
 endif
 $(info ***********OpenMP:           $(OOMP))
 $(info ***********Lapack:           $(LLAPACK))
-$(info ************************************************************************)
+$(info ***********FFLAGS:           $(FFLAGS))
+$(info ***********EXTLib:           $(EXTLib))
 $(info ************************************************************************)
 #==========================================
-VPATH = SRC/sub_system SRC/sub_module SRC/sub_communf90/sub_math TESTS
+VPATH = SRC/sub_dnSVM TESTS
 
-Primlib_SRCFILES  = sub_module_MPI.f90  FOR_EVRT_system_m.f90 sub_module_MPI_aux.f90 sub_module_cart.f90
+dnSVM_SRCFILES = \
+  sub_module_dnS.f90 sub_module_VecOFdnS.f90 sub_module_MatOFdnS.f90 \
+  sub_module_dnV.f90 sub_module_dnM.f90 \
+  sub_module_dnSVM.f90
 
-math_SRCFILES = sub_integration.f90 sub_polyortho.f90 sub_function.f90 sub_fft.f90
+FiniteDiff_SRCFILES = mod_FiniteDiff.f90
 
-nDfit_SRCFILES    = sub_module_nDfit.f90
 #============================================================================
 
-SRCFILES= $(Primlib_SRCFILES) $(math_SRCFILES) $(nDfit_SRCFILES)
+SRCFILES= $(dnSVM_SRCFILES) $(FiniteDiff_SRCFILES)
 
 OBJ0=${SRCFILES:.f90=.o}
 OBJ=$(addprefix $(OBJ_DIR)/, $(OBJ0))
@@ -144,19 +134,20 @@ $(info ************ OBJ: $(OBJ))
 #============= tests ===========================
 #===============================================
 .PHONY: ut
-ut: Test_FOR_EVRT.exe
+ut: Test_EVRT_dnSVM.exe
 	@echo "---------------------------------------"
-	@echo "Tests FOR_EVRT"
-	./Test_FOR_EVRT.exe > tests.log
+	@echo "Tests EVRT_dnSVM"
+	./Test_EVRT_dnSVM.exe > tests.log
+	grep "Number of" mod_dnSVM.log
 	@echo "---------------------------------------"
 #
-Test_FOR_EVRT.exe: $(OBJ_DIR)/Test_FOR_EVRT.o $(LIBA) $(EXTLib)
-	$(FFC) $(FFLAGS) -o Test_FOR_EVRT.exe $(OBJ_DIR)/Test_FOR_EVRT.o $(LIBA) $(EXTLib) $(FLIB)
-	@echo "  done Library: Test_FOR_EVRT.exe"
+Test_EVRT_dnSVM.exe: $(OBJ_DIR)/Test_EVRT_dnSVM.o $(LIBA) $(EXTLib)
+	$(FFC) $(FFLAGS) -o Test_EVRT_dnSVM.exe $(OBJ_DIR)/Test_EVRT_dnSVM.o $(LIBA) $(EXTLib) $(FLIB)
+	@echo "  done Library: Test_EVRT_dnSVM.exe"
 #
-$(OBJ_DIR)/Test_FOR_EVRT.o: $(LIBA) $(EXTLib)
+$(OBJ_DIR)/Test_EVRT_dnSVM.o: $(LIBA) $(EXTLib)
 #===============================================
-#============= Library: FOR_EVRT....a  =========
+#============= Library: EVRT_dnSVM....a  =======
 #===============================================
 .PHONY: lib
 lib: $(LIBA)
@@ -189,12 +180,12 @@ cleanall : clean clean_extlib
 #===============================================
 #================ zip and copy the directory ===
 ExtLibSAVEDIR := /Users/lauvergn/git/Ext_Lib
-BaseName := FOR_EVRT
+BaseName := EVRT_dnSVM
 .PHONY: zip
 zip: cleanall
 	test -d $(ExtLibSAVEDIR) || (echo $(ExtLibDIR) "does not exist" ; exit 1)
 	$(ExtLibSAVEDIR)/makezip.sh $(BaseName)
-	cd $(ExtLibSAVEDIR) ; ./cp_FOR_EVRT.sh
+	cd $(ExtLibSAVEDIR) ; ./cp_EVRT_dnSVM.sh
 	@echo "  done zip"
 #===============================================
 #=== external libraries ========================
@@ -204,33 +195,19 @@ zip: cleanall
 .PHONY: getlib
 getlib:
 	cd $(ExtLibDIR) ; ./get_Lib.sh QDUtilLib dev
-	cd $(ExtLibDIR) ; ./get_Lib.sh nDindex dev
 	cd $(ExtLibDIR) ; ./get_Lib.sh AD_dnSVM dev
-	cd $(ExtLibDIR) ; ./get_Lib.sh EVRT_dnSVM dev
-#
-$(nDindexLIBA): getlib
-	cd $(nDindex_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) INT=$(INT) ExtLibDIR=$(ExtLibDIR) CompilersDIR=$(CompilersDIR)
-	@test -f $(nDindexLIBA) || (echo $(nDindexLIBA) "does not exist" ; exit 1)
-	@echo "  done " $(nDindexLIBA) " in "$(BaseName)
-#
-$(EVRTdnSVMLIBA): getlib
-	cd $(EVRTdnSVM_DIR) ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) INT=$(INT) ExtLibDIR=$(ExtLibDIR) CompilersDIR=$(CompilersDIR)
-	@test -f $(EVRTdnSVMLIBA) || (echo $(EVRTdnSVMLIBA) "does not exist" ; exit 1)
-	@echo "  done " $(EVRTdnSVMLIBA) " in "$(BaseName)
 #
 $(QDLIBA): getlib
 	cd $(ExtLibDIR)/QDUtilLib ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) INT=$(INT) ExtLibDIR=$(ExtLibDIR) CompilersDIR=$(CompilersDIR)
 	@test -f $(QDLIBA) || (echo $(QDLIBA) "does not exist" ; exit 1)
-	@echo "  done " $(QDLIBA) " in "$(BaseName)
-#
+	@echo "  done " $(QDLIBA)
 $(ADLIBA): getlib
 	cd $(ExtLibDIR)/AD_dnSVM ; make lib FC=$(FFC) OPT=$(OOPT) OMP=$(OOMP) LAPACK=$(LLAPACK) INT=$(INT) ExtLibDIR=$(ExtLibDIR) CompilersDIR=$(CompilersDIR)
 	@test -f $(ADLIBA) || (echo $(ADLIBA) "does not exist" ; exit 1)
-	@echo "  done " $(ADLIBA) " in "$(BaseName)
-##
+	@echo "  done " $(ADLIBA)
+#
 .PHONY: clean_extlib
 clean_extlib:
-	echo cleanlib, DIR=$(ExtLibDIR)
 	cd $(ExtLibDIR) ; ./cleanlib
 #
 #===============================================
@@ -242,16 +219,14 @@ fpmlink: getlib
 #=======================================================================================
 #=======================================================================================
 #add dependence for parallelization
-$(OBJ): $(QDLIBA) $(ADLIBA)  $(EVRTdnSVMLIBA) $(nDindexLIBA)
+$(OBJ): | $(ADLIBA) $(QDLIBA)
 
-$(OBJ_DIR)/FOR_EVRT_system_m.o:       $(OBJ_DIR)/sub_module_MPI.o
-$(OBJ_DIR)/sub_module_MPI_aux.o:      $(OBJ_DIR)/sub_module_MPI.o $(OBJ_DIR)/FOR_EVRT_system_m.o
+$(OBJ_DIR)/sub_module_VecOFdnS.o:     $(OBJ_DIR)/sub_module_dnS.o
+$(OBJ_DIR)/sub_module_MatOFdnS.o:     $(OBJ_DIR)/sub_module_dnS.o 
+$(OBJ_DIR)/sub_module_dnV.o:          $(OBJ_DIR)/sub_module_dnS.o
+$(OBJ_DIR)/sub_module_dnM.o:          $(OBJ_DIR)/sub_module_dnV.o $(OBJ_DIR)/sub_module_dnS.o
+$(OBJ_DIR)/sub_module_dnSVM.o:        $(OBJ_DIR)/sub_module_dnS.o $(OBJ_DIR)/sub_module_VecOFdnS.o \
+                                      $(OBJ_DIR)/sub_module_MatOFdnS.o $(OBJ_DIR)/sub_module_dnV.o\
+                                      $(OBJ_DIR)/sub_module_dnM.o
 
-$(OBJ_DIR)/sub_integration.o:         $(OBJ_DIR)/FOR_EVRT_system_m.o
-$(OBJ_DIR)/sub_polyortho.o:           $(OBJ_DIR)/FOR_EVRT_system_m.o
-$(OBJ_DIR)/sub_function.o:            $(OBJ_DIR)/FOR_EVRT_system_m.o
-$(OBJ_DIR)/sub_fft.o:                 $(OBJ_DIR)/FOR_EVRT_system_m.o
-
-$(OBJ_DIR)/sub_module_cart.o:         $(OBJ_DIR)/FOR_EVRT_system_m.o
-
-$(OBJ_DIR)/sub_module_nDfit.o:        $(OBJ_DIR)/FOR_EVRT_system_m.o
+$(OBJ_DIR)/mod_FiniteDiff.o:          $(OBJ_DIR)/sub_module_dnSVM.o
