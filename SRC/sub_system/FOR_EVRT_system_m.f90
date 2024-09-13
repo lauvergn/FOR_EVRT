@@ -39,6 +39,115 @@ MODULE FOR_EVRT_system_m
     character (len=Name_len) :: Optimization_param  = 'geometry'
   END TYPE param_FOR_optimization
 
-  TYPE (param_FOR_optimization), save :: para_FOR_optimization
+  INTERFACE Write_Mat_MPI
+    MODULE PROCEDURE Write_RMat_MPI,Write_CMat_MPI
+  END INTERFACE
+  INTERFACE Write_Vec_MPI
+    MODULE PROCEDURE Write_RVec_MPI,Write_CVec_MPI
+  END INTERFACE
 
+  TYPE (param_FOR_optimization), save :: para_FOR_optimization
+CONTAINS
+  SUBROUTINE Write_RMat_MPI(f,nio,nbcol1,Rformat,info)
+    USE mod_MPI, ONLY : MPI_id
+
+    real(kind=Rkind),    intent(in)           :: f(:,:)
+    integer,             intent(in)           :: nio,nbcol1
+
+    character (len=*),   intent(in), optional :: Rformat
+    character (len=*),   intent(in), optional :: info
+
+    IF(MPI_id /= 0) RETURN
+
+    IF (present(Rformat)) THEN
+      IF (present(info)) THEN
+        CALL  Write_Mat(f,nio,nbcol1,Rformat=Rformat,info=info)
+      ELSE
+        CALL  Write_Mat(f,nio,nbcol1,Rformat=Rformat)
+      END IF
+    ELSE
+      IF (present(info)) THEN
+        CALL  Write_Mat(f,nio,nbcol1,info=info)
+      ELSE
+        CALL  Write_Mat(f,nio,nbcol1)
+      END IF
+    END IF
+
+  END SUBROUTINE Write_RMat_MPI
+  SUBROUTINE Write_CMat_MPI(f,nio,nbcol1,Rformat,info)
+    USE mod_MPI, ONLY : MPI_id
+
+    complex(kind=Rkind), intent(in)           :: f(:,:)
+    integer,             intent(in)           :: nio,nbcol1
+
+    character (len=*),   intent(in), optional :: Rformat
+    character (len=*),   intent(in), optional :: info
+
+
+    IF(MPI_id /= 0) RETURN
+
+    IF (present(Rformat)) THEN
+      IF (present(info)) THEN
+        CALL  Write_Mat(f,nio,nbcol1,Rformat=Rformat,info=info)
+      ELSE
+        CALL  Write_Mat(f,nio,nbcol1,Rformat=Rformat)
+      END IF
+    ELSE
+      IF (present(info)) THEN
+        CALL  Write_Mat(f,nio,nbcol1,info=info)
+      ELSE
+        CALL  Write_Mat(f,nio,nbcol1)
+      END IF
+    END IF
+
+  END SUBROUTINE Write_CMat_MPI
+  SUBROUTINE Write_RVec_MPI(l,nio,nbcol1,Rformat,info)
+    USE mod_MPI, ONLY : MPI_id
+
+    real(kind=Rkind), intent(in)              :: l(:)
+    integer,             intent(in)           :: nio,nbcol1
+
+    character (len=*),   intent(in), optional :: Rformat
+    character (len=*),   intent(in), optional :: info
+
+    IF (present(Rformat)) THEN
+      IF (present(info)) THEN
+        CALL  Write_Vec(l,nio,nbcol1,Rformat=Rformat,info=info)
+      ELSE
+        CALL  Write_Vec(l,nio,nbcol1,Rformat=Rformat)
+      END IF
+    ELSE
+      IF (present(info)) THEN
+        CALL  Write_Vec(l,nio,nbcol1,info=info)
+      ELSE
+        CALL  Write_Vec(l,nio,nbcol1)
+      END IF
+    END IF
+
+  END SUBROUTINE Write_RVec_MPI
+
+  SUBROUTINE Write_CVec_MPI(l,nio,nbcol1,Rformat,info)
+    USE mod_MPI, ONLY : MPI_id
+
+    complex(kind=Rkind), intent(in)           :: l(:)
+    integer,             intent(in)           :: nio,nbcol1
+
+    character (len=*),   intent(in), optional :: Rformat
+    character (len=*),   intent(in), optional :: info
+
+    IF (present(Rformat)) THEN
+      IF (present(info)) THEN
+        CALL  Write_Vec(l,nio,nbcol1,Rformat=Rformat,info=info)
+      ELSE
+        CALL  Write_Vec(l,nio,nbcol1,Rformat=Rformat)
+      END IF
+    ELSE
+      IF (present(info)) THEN
+        CALL  Write_Vec(l,nio,nbcol1,info=info)
+      ELSE
+        CALL  Write_Vec(l,nio,nbcol1)
+      END IF
+    END IF
+
+  END SUBROUTINE Write_CVec_MPI
 END MODULE FOR_EVRT_system_m

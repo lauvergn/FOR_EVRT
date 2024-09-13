@@ -110,6 +110,8 @@ ifeq ($(CompilersDIR),)
 else
   include $(CompilersDIR)/compilers.mk
 endif
+FFLAGS += -Drun_MPI=0
+
 #===============================================================================
 #===============================================================================
 $(info ************************************************************************)
@@ -122,6 +124,8 @@ $(info ***********COMPILED with:    $(MPICORE))
 endif
 $(info ***********OpenMP:           $(OOMP))
 $(info ***********Lapack:           $(LLAPACK))
+$(info ***********FFLAGS:           $(FFLAGS))
+
 $(info ************************************************************************)
 $(info ************************************************************************)
 #==========================================
@@ -166,6 +170,18 @@ $(LIBA): $(OBJ)
 	@echo "  done Library: "$(LIBA)
 #
 #===============================================
+#============= Make the MPI file (because fpm does not work)  =========
+#===============================================
+.PHONY: mpi
+mpi: SRC/sub_system/sub_module_MPI.f90 SRC/sub_system/sub_module_MPI_aux.f90
+
+SRC/sub_system/sub_module_MPI.f90:
+	gfortran $(FFLAGS) -E SRC_MPIdef/sub_module_MPI.f90 > SRC/sub_system/sub_module_MPI.f90
+SRC/sub_system/sub_module_MPI_aux.f90:
+	gfortran $(FFLAGS) -E SRC_MPIdef/sub_module_MPI_aux.f90 > SRC/sub_system/sub_module_MPI_aux.f90
+
+#
+#===============================================
 #============= compilation =====================
 #===============================================
 $(OBJ_DIR)/%.o: %.f90
@@ -185,6 +201,7 @@ cleanall : clean clean_extlib
 	rm -f *.a
 	rm -f *.exe
 	rm -f TESTS/res* TESTS/*log
+	rm -f SRC/sub_system/sub_module_MPI_aux.f90 SRC/sub_system/sub_module_MPI.f90
 	@echo "  done all cleaning"
 #===============================================
 #================ zip and copy the directory ===
